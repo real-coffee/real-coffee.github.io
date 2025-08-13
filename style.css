@@ -1,0 +1,39 @@
+/* NOTE(eng): Minimal custom CSS; Tailwind handles most styling. */
+body { font-family: 'Pretendard', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+
+.slot-cell {
+  @apply h-20 sm:h-24 rounded-2xl flex items-center justify-center border border-zinc-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/70;
+}
+.slot-cell span { @apply font-black text-2xl sm:text-3xl tracking-widest; }
+
+.btn-primary {
+  @apply px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold hover:bg-amber-600 active:scale-[0.99];
+}
+.btn-secondary {
+  @apply px-4 py-2 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-semibold hover:opacity-90 active:scale-[0.99];
+}
+.btn-ghost {
+  @apply px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800;
+}
+
+.animate-fadein {
+  animation: fadein 0.35s ease both;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Rarity frames (text-only to avoid any copyrighted images) */
+.card-c   { box-shadow: var(--c-glow, 0 0 0 2px rgba(209,213,219,.6), 0 6px 18px rgba(0,0,0,.08)); border-color: rgb(209 213 219); }
+.card-u   { box-shadow: var(--u-glow, 0 0 0 2px rgba(125,211,252,.6), 0 6px 18px rgba(0,0,0,.12)); border-color: rgb(125 211 252); }
+.card-r   { box-shadow: var(--r-glow, 0 0 0 2px rgba(252,211,77,.7), 0 6px 20px rgba(0,0,0,.16)); border-color: rgb(252 211 77); }
+.card-sr  { box-shadow: var(--sr-glow,0 0 0 2px rgba(196,181,253,.7), 0 8px 24px rgba(0,0,0,.2)); border-color: rgb(196 181 253); }
+.card-ur  { box-shadow: var(--ur-glow,0 0 0 2px rgba(249,168,212,.8), 0 10px 28px rgba(0,0,0,.24)); border-color: rgb(249 168 212); }
+
+/* Simple slot-cell spin cue */
+.slot-cell.spin { animation: slotflip 0.15s linear; }
+@keyframes slotflip {
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(360deg); }
+}

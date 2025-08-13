@@ -1,335 +1,131 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>진짜커피? | 커피 초대</title>
-  <meta name="description" content="커피 초대">
-  <style>
-    :root{
-      --bg: #0b0f19; --card:#0f1526; --muted:#9aa3b2; --text:#e7ecf3; --accent:#6ee7ff; --brand:#63f5a0; --warn:#ffdf6e;
+  <meta name="color-scheme" content="light dark" />
+  <title>진짜찐짜 카드깡 — 포켓몬 카드 팩 오픈 시뮬레이터</title>
+  <meta name="description" content="불법 금융행위와 무관한 팬메이드 포켓몬 카드 팩 오픈 시뮬레이터 — 오늘의 카드 횟수 슬롯과 재치있는 인터랙션" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind custom config (optional)
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            'glow-c': '0 0 0 2px rgba(209,213,219,0.6), 0 6px 18px rgba(0,0,0,0.08)',
+            'glow-u': '0 0 0 2px rgba(125,211,252,0.6), 0 6px 18px rgba(0,0,0,0.12)',
+            'glow-r': '0 0 0 2px rgba(252,211,77,0.7), 0 6px 20px rgba(0,0,0,0.16)',
+            'glow-sr':'0 0 0 2px rgba(196,181,253,0.7), 0 8px 24px rgba(0,0,0,0.2)',
+            'glow-ur':'0 0 0 2px rgba(249,168,212,0.8), 0 10px 28px rgba(0,0,0,0.24)',
+          }
+        }
+      }
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Pretendard,Arial,sans-serif;color:var(--text);background:
-      radial-gradient(1200px 600px at 100% -20%, #14325555 0, transparent 60%),
-      radial-gradient(1000px 400px at -10% 20%, #13522355 0, transparent 60%),
-      linear-gradient(180deg,#0b0f19,#0b0f19 60%,#0b0f19);
-      letter-spacing:.1px}
-    a{color:inherit;text-decoration:none}
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    header{position:sticky;top:0;background:linear-gradient(#0b0f19bb,#0b0f1900);backdrop-filter:saturate(140%) blur(8px);z-index:10}
-    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
-    .logo{display:flex;gap:10px;align-items:center}
-    .logo-badge{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg at 50% 50%,#6ee7ff, #63f5a0,#6ee7ff);filter:drop-shadow(0 0 12px #6ee7ff40)}
-    .logo h1{font-size:18px;margin:0;font-weight:700}
-    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #2b3347;background:#11172a;border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted)}
-
-    .hero{padding:56px 0 24px;display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
-    @media (max-width:900px){.hero{grid-template-columns:1fr;}}
-    .hero h2{font-size:44px;line-height:1.1;margin:0 0 14px}
-    .hero p{color:var(--muted);margin:0 0 18px}
-    .card{background:linear-gradient(180deg,#0f1526,#0d1221);border:1px solid #212943;border-radius:16px;box-shadow:0 10px 40px #00000055, inset 0 1px 0 #ffffff08}
-    .hero-card{padding:22px}
-    .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-    .badge{border:1px dashed #2b3347;padding:6px 10px;border-radius:12px;font-size:12px;color:#b8c2d1}
-
-    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-    .btn{cursor:pointer;border:none;border-radius:12px;padding:12px 16px;font-weight:700;transition:transform .05s ease,box-shadow .2s ease}
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
-    .btn-primary{background:linear-gradient(180deg,#6ee7ff,#63f5a0);color:#0a0f18;box-shadow:0 8px 24px #63f5a055}
-    .btn-ghost{background:#11172a;color:#cbd6e9;border:1px solid #27314a}
-    .mini{font-size:12px;color:#aeb7c7;margin-top:6px}
-
-    .ticker{display:flex;gap:16px;overflow:auto;padding:14px 4px}
-    .tick{white-space:nowrap;color:#a6b0c2;font-size:13px;border-right:1px solid #27314a;padding-right:16px}
-
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .feature{padding:18px}
-    .feature h3{margin:6px 0 8px;font-size:18px}
-    .feature p{margin:0;color:#b7c2d6;font-size:14px}
-
-    .testi{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);margin-top:8px}
-    @media (max-width:900px){.testi{grid-template-columns:1fr}}
-    .quote{padding:16px;display:flex;gap:12px}
-    .avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(180deg,#2a3552,#202944)}
-    .q-txt{font-size:14px;color:#c6d0e3}
-    .q-name{font-size:12px;color:#9aa3b2;margin-top:4px}
-
-    .pricing{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
-    @media (max-width:900px){.pricing{grid-template-columns:1fr}}
-    .price{padding:18px;position:relative}
-    .ribbon{position:absolute;top:14px;right:-10px;transform:rotate(8deg);background:#141a2b;border:1px solid #2b3347;color:#9ad9ff;font-size:12px;padding:4px 10px;border-radius:8px}
-    .price h4{margin:2px 0 6px}
-    .price p{margin:0;color:#aeb7c7;font-size:14px}
-
-    .faq{display:grid;gap:10px}
-    details{background:#0e1425;border:1px solid #212943;border-radius:12px;padding:12px}
-    summary{cursor:pointer;font-weight:700}
-
-    footer{color:#8f98aa;padding:32px 0 48px}
-    .copy{opacity:.7;font-size:12px;margin-top:12px}
-
-    .marquee{display:flex;gap:18px;align-items:center;animation:scroll 22s linear infinite}
-    @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-    .badge-dot{width:6px;height:6px;border-radius:999px;background:var(--brand);box-shadow:0 0 10px var(--brand)}
-
-    .count{font-feature-settings:"tnum" 1, "lnum" 1; font-variant-numeric:tabular-nums;}
-
-    .modal-backdrop{position:fixed;inset:0;background:#0008;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
-    .modal{max-width:520px;width:100%;background:#0f1526;border:1px solid #212943;border-radius:16px;box-shadow:0 20px 60px #0008;padding:20px}
-    .modal h3{margin:0 0 10px}
-
-    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#12182a;border:1px solid #2a3550;color:#d7e3f6;padding:12px 16px;border-radius:12px;display:none}
-  </style>
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <header>
-    <div class="container nav">
-      <div class="logo">
-        <div class="logo-badge" aria-hidden="true"></div>
-        <h1>진짜커피?<span style="color:#8fb6ff;font-size:12px;font-weight:600">™</span></h1>
+<body class="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-zinc-900 dark:to-zinc-950 text-zinc-900 dark:text-zinc-100">
+  <!-- Header -->
+  <header class="sticky top-0 z-30 backdrop-blur bg-white/70 dark:bg-zinc-900/70 border-b border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">✨</span>
+        <h1 class="font-extrabold text-xl sm:text-2xl">진짜찐짜 카드깡</h1>
+        <span class="text-xs bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded px-2 py-1">포켓몬 카드 팩 오픈 시뮬레이터</span>
       </div>
-      <div class="pill"><span class="badge-dot"></span> 오늘의 커피지수 <strong style="color:#fff">12.0%</strong> — 코어랩 커피타임</div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" class="px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="테마 전환">라이트/다크</button>
+      </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <div>
-        <h2>진짜진짜진짜.<br/> <span style="background:linear-gradient(90deg,#6ee7ff,#63f5a0);-webkit-background-clip:text;background-clip:text;color:transparent">진짜커피?</span></h2>
-        <p>ㅈㅉㅈㅉㅈㅉ?.</p>
-        <div class="cta-row">
-          <button class="btn btn-primary" id="go-now">지금 진짜커피 하러 가기</button>
-          <button class="btn btn-ghost" id="copy-btn">초대문구 복사하기</button>
-        </div>
-        <div class="mini">* 버튼을 누르면 보상 제공: <strong>한울샘</strong>.</div>
-        <div class="badge-row">
-          <span class="badge">ISO 114-514 인증</span>
-          <span class="badge">GDPR 준수</span>
-          <span class="badge">광고·스팸·피싱 무관</span>
-          <span class="badge">카페인 100%</span>
-        </div>
-      </div>
-      <div class="card hero-card" aria-live="polite">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px">
-          <strong>오늘의 커피 슬롯</strong>
-          <span class="pill"><span class="badge-dot"></span> 실시간</span>
-        </div>
-        <div style="display:flex;gap:10px;align-items:baseline">
-          <div style="font-size:36px;font-weight:800" class="count" id="slots">3</div>
-          <div style="color:#9aa3b2">잔 남음*</div>
-        </div>
-        <div class="mini">* 코어랩 커피타임</div>
-        <hr style="border:none;border-top:1px solid #212943;margin:16px 0"/>
-        <div class="ticker">
-          <div class="tick">☕ 오늘의 원두: <strong>한울샘</strong></div>
-          <div class="tick">🕒 추천 시간: <strong id="recommend">오후 3:00</strong></div>
-          <div class="tick">📍 장소: <strong>공C B2층 주차장 옆</strong></div>
-          <div class="tick">🎵 BGM: <strong>F1 BGM (제목 모름)</strong></div>
-        </div>
-      </div>
-    </section>
+  <!-- Notice -->
+  <section class="max-w-6xl mx-auto px-4 mt-4">
+    <div class="border border-amber-300 dark:border-amber-500 rounded-xl p-3 flex gap-3 items-start bg-amber-50/40 dark:bg-amber-950/20">
+      <span class="text-amber-600 dark:text-amber-300">⚠️</span>
+      <p class="text-sm leading-relaxed">
+        이 사이트는 <b>불법 금융행위(일명 ‘카드깡’)</b>과 전혀 관련이 없는 <b>팬메이드 게임</b>입니다. 실제 결제/현금화 기능은 제공하지 않으며,
+        포켓몬 카드 팩을 <b>가상으로 오픈</b>하는 재미만 제공합니다.
+      </p>
+    </div>
+  </section>
 
-    <section style="margin:16px 0 24px" class="marquee">
-      <div class="pill">신규 회원 혜택</div>
-      <div class="pill">한정 수량</div>
-      <div class="pill">숨겨진 비용: 가위바위보 지면 좀 많이 듦</div>
-      <div class="pill">업무 생산성: +7%</div>
-      <div class="pill">원가 절감: 쿠폰 쓰면 100%</div>
-    </section>
+  <!-- Stats -->
+  <section class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <div class="font-semibold text-sm mb-1 flex items-center gap-2"><span>☕</span>오늘의 카드 횟수</div>
+      <div class="text-3xl font-extrabold tabular-nums"><span id="todayCount">0</span><span class="text-base font-medium ml-1">장</span></div>
+      <p class="text-xs text-zinc-500 mt-1">※ 기존 “오늘의 커피슬롯”을 <b>오늘의 카드 횟수</b>로 치환</p>
+    </div>
 
-    <section class="grid">
-      <article class="card feature">
-        <div class="badge">FEATURE 01</div>
-        <h3>원두보다 <em>사람</em> 중심</h3>
-        <p>논문, 연구… 다 중요하지만 오늘은 커피가 더 진합니다. 필요한 건 10분의 여유뿐.</p>
-      </article>
-      <article class="card feature">
-        <div class="badge">FEATURE 02</div>
-        <h3>99.9% 정성</h3>
-        <p>그러나 결론은 단순합니다: 내려가서 진짜 커피?</p>
-      </article>
-      <article class="card feature">
-        <div class="badge">FEATURE 03</div>
-        <h3>데이터 최소 수집</h3>
-        <p>수집 항목: 이름, 선호 커피. 저장 기간: 마실 때까지.</p>
-      </article>
-    </section>
-
-    <section style="margin-top:26px">
-      <h3 style="margin:6px 0 10px">솔직한 후기</h3>
-      <div class="testi">
-        <div class="card quote">
-          <div class="avatar" aria-hidden="true"></div>
-          <div>
-            <div class="q-txt">“그냥 커피 마셨습니다. 좋아요.”</div>
-            <div class="q-name">— 김**</div>
-          </div>
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <div class="font-semibold text-sm mb-1">누적 오픈</div>
+      <div class="text-3xl font-extrabold tabular-nums"><span id="totalCount">0</span><span class="text-base font-medium ml-1">장</span></div>
+      <div class="mt-2">
+        <div class="w-full h-2 rounded bg-zinc-200 dark:bg-zinc-800">
+          <div id="progressBar" class="h-2 rounded bg-amber-400" style="width: 0%"></div>
         </div>
-        <div class="card quote">
-          <div class="avatar" aria-hidden="true"></div>
-          <div>
-            <div class="q-txt">“진짜 1등이 사기?”</div>
-            <div class="q-name">— 윤**</div>
-          </div>
-        </div>
-        <div class="card quote">
-          <div class="avatar" aria-hidden="true"></div>
-          <div>
-            <div class="q-txt">“전 이미 내려 마셨어여”</div>
-            <div class="q-name">— 천**</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section style="margin-top:26px">
-      <h3 style="margin:6px 0 10px">합리적인 가격표</h3>
-      <div class="pricing">
-        <div class="card price">
-          <div class="ribbon">베스트</div>
-          <h4>아이스 아메리카노</h4>
-          <p>가격: 0원</p>
-          <p class="mini">가위바위보 이기면 됨</p>
-        </div>
-        <div class="card price">
-          <h4>돌체라떼</h4>
-          <p>가격: 0원</p>
-          <p class="mini">나만 아니면 됨</p>
-        </div>
-        <div class="card price">
-          <h4>연구실 커피</h4>
-          <p>가격: 0원</p>
-          <p class="mini"></p>
-        </div>
-      </div>
-    </section>
-
-    <section style="margin-top:26px">
-      <h3 style="margin:6px 0 10px">FAQ — 자주 묻는 내용</h3>
-      <div class="faq">
-        <details>
-          <summary>몇 등이 사기?</summary>
-          <p>오늘은 1등이 기분좋게 사기</p>
-        </details>
-        <details>
-          <summary>어디로 가면 되나요?</summary>
-          <p>오늘은 비오니까 <strong>한울샘</strong></p>
-        </details>
-        <details>
-          <summary>시간 약속이 있나요?</summary>
-          <p>오늘 합의된 시간은 <span class="count" id="faq-time">오후 3:00</span></p>
-        </details>
-        <details>
-          <summary>준비물은?</summary>
-          <p>쿠폰 챙겨오기.</p>
-        </details>
-      </div>
-    </section>
-
-    <section style="margin:30px 0 10px;text-align:center">
-      <button class="btn btn-primary" id="big-cta" style="font-size:18px;padding:16px 22px">지금, 그냥 내려가기</button>
-      <div class="mini">*졸려.</div>
-    </section>
-
-    <footer>
-      <hr style="border:none;border-top:1px solid #202842;margin:0 0 12px"/>
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center">
-        <div>
-          <strong>진짜커피?</strong> — 코어랩 커피 초대 프로젝트
-          <div class="copy">© <span id="year"></span> Whoever Reads This. All rights probably reserved somewhere.</div>
-        </div>
-        <div class="mini">세부 약관: <em>없음</em> · 개인정보: <em>수집 불가</em></div>
-      </div>
-    </footer>
-  </main>
-
-  <div class="modal-backdrop" id="modal">
-    <div class="modal">
-      <h3>논문 진행 현황</h3>
-      <p id="room-status">…</p>
-      <div class="cta-row" style="justify-content:flex-end">
-        <button class="btn btn-ghost" id="close-modal">닫기</button>
+        <p class="text-xs text-zinc-500 mt-1">다음 100장까지 <span id="toNext">100</span>장</p>
       </div>
     </div>
-  </div>
 
-  <div class="toast" id="toast">초대문구가 복사되었습니다. 채팅방에 붙여넣기!</div>
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <div class="font-semibold text-sm mb-1">오늘의 운세 게이지</div>
+      <div class="flex items-center gap-2">
+        <span>⭐</span>
+        <div class="w-full h-2 rounded bg-zinc-200 dark:bg-zinc-800">
+          <div id="luckBar" class="h-2 rounded bg-emerald-400" style="width: 0%"></div>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-500 mt-1">팩에서 높은 레어가 나올수록 상승</p>
+    </div>
+  </section>
 
-  <script>
-    // Year
-    document.getElementById('year').textContent = new Date().getFullYear();
+  <!-- Slot + Pack -->
+  <section class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <div class="font-semibold text-base mb-3 flex items-center gap-2">🎰 오늘의 카드 슬롯</div>
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="slot-cell"><span id="reel1">C</span></div>
+        <div class="slot-cell"><span id="reel2">C</span></div>
+        <div class="slot-cell"><span id="reel3">C</span></div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="spinBtn" class="btn-primary">스핀</button>
+        <button id="openBtn" class="btn-secondary">팩 오픈(10장)</button>
+        <button id="resetBtn" class="btn-ghost">오늘 카운트 초기화</button>
+      </div>
+      <p class="text-xs text-zinc-500 mt-3">스핀은 연출용이며, 팩 오픈 시 <b>오늘의 카드 횟수</b>가 10장 증가합니다.</p>
+    </div>
 
-    // Recommended time (simple heuristic)
-    function toKST(date){
-      const utc = date.getTime() + (date.getTimezoneOffset()*60000);
-      const kstOffset = 9*60*60000; // UTC+9
-      return new Date(utc + kstOffset);
-    }
-    const nowKST = toKST(new Date());
-    const hour = nowKST.getHours();
-    const recommended = hour < 10 ? '오전 10:30' : hour < 15 ? '오후 3:00' : '오후 4:10';
-    document.getElementById('recommend').textContent = recommended;
-    document.getElementById('faq-time').textContent = recommended;
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <div class="font-semibold text-base mb-3 flex items-center gap-2">✨ 최근 오픈 결과</div>
+      <div id="packGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+      <div id="emptyHint" class="text-sm text-zinc-500">아직 오픈한 팩이 없습니다. 스핀 후 <b>팩 오픈</b>을 눌러보세요!</div>
+    </div>
+  </section>
 
-    // Fake slots wiggle
-    const elSlots = document.getElementById('slots');
-    let slots = 3;
-    setInterval(()=>{ slots = Math.max(0, Math.min(9, slots + (Math.random()>0.6? -1: 1))); elSlots.textContent = slots; }, 3000);
+  <!-- Footer -->
+  <section class="max-w-6xl mx-auto px-4 mt-10 mb-16">
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4">
+      <p class="font-semibold mb-1 text-sm">커스터마이징 가이드</p>
+      <ul class="list-disc pl-5 text-sm space-y-1">
+        <li><b>브랜딩:</b> 상단 제목/배지 문구 수정</li>
+        <li><b>카드 풀:</b> <code>POKEMON</code> 배열을 JSON으로 교체 가능</li>
+        <li><b>레어도 확률:</b> <code>RARITIES.weight</code> 조정</li>
+        <li><b>데이터 보존:</b> <code>localStorage</code> 기반 일/누적 카운트</li>
+        <li><b>법적 고지:</b> 상단 경고 카드 유지(실제 결제/현금화 기능 금지)</li>
+      </ul>
+    </div>
+  </section>
 
-    // CTA actions
-    function showToast(msg){
-      const t = document.getElementById('toast');
-      t.textContent = msg || t.textContent;
-      t.style.display = 'block';
-      setTimeout(()=> t.style.display = 'none', 1800);
-    }
-
-    document.getElementById('copy-btn').addEventListener('click', async ()=>{
-      const text = `진짜커피? ㄱㄱ${recommended}`; 
-      try{ await navigator.clipboard.writeText(text); showToast('초대문구가 복사되었습니다. 채팅방에 붙여넣기!'); }catch(e){ showToast('복사가 어려워요! 수동으로 부탁 🙏'); }
-    });
-
-    function openModal(){
-      const m = document.getElementById('modal');
-      m.style.display = 'flex';
-      const status = document.getElementById('room-status');
-      status.textContent = '…';
-      setTimeout(()=> status.textContent = '결과: ...', 1200);
-    }
-
-    document.getElementById('go-now').addEventListener('click', openModal);
-
-    document.getElementById('close-modal').addEventListener('click', ()=>{
-      document.getElementById('modal').style.display = 'none';
-    });
-
-    document.getElementById('big-cta').addEventListener('click', ()=>{
-      // Subtle confetti-ish effect using emoji
-      const burst = document.createElement('div');
-      burst.style.position='fixed'; burst.style.inset='0'; burst.style.pointerEvents='none';
-      for(let i=0;i<24;i++){
-        const s = document.createElement('div');
-        s.textContent = ['☕','✨','💬','🫘'][i%4];
-        s.style.position='absolute';
-        s.style.left = Math.random()*100+'%';
-        s.style.top = '-20px';
-        s.style.fontSize = (16+Math.random()*20)+'px';
-        s.style.opacity = .9;
-        s.style.transition = 'transform 1.2s cubic-bezier(.2,.6,.2,1), opacity 1.2s';
-        burst.appendChild(s);
-        requestAnimationFrame(()=>{
-          s.style.transform = `translateY(${80+Math.random()*120}vh) rotate(${(Math.random()-.5)*120}deg)`;
-          s.style.opacity = 0;
-        });
-      }
-      document.body.appendChild(burst);
-      setTimeout(()=> burst.remove(), 1400);
-      showToast('출발!.');
-    });
-  </script>
+  <script src="./app.js"></script>
 </body>
 </html>
