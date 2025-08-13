@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>진짜커피? | 오늘도 스팸 같은 초대</title>
+  <meta name="description" content="오늘도 스팸 같은 정성으로 드리는 커피 초대. 자세히 읽을수록 이상한데 맛은 진지합니다.">
+  <style>
+    :root{
+      --bg: #0b0f19; --card:#0f1526; --muted:#9aa3b2; --text:#e7ecf3; --accent:#6ee7ff; --brand:#63f5a0; --warn:#ffdf6e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Pretendard,Arial,sans-serif;color:var(--text);background:
+      radial-gradient(1200px 600px at 100% -20%, #14325555 0, transparent 60%),
+      radial-gradient(1000px 400px at -10% 20%, #13522355 0, transparent 60%),
+      linear-gradient(180deg,#0b0f19,#0b0f19 60%,#0b0f19);
+      letter-spacing:.1px}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;background:linear-gradient(#0b0f19bb,#0b0f1900);backdrop-filter:saturate(140%) blur(8px);z-index:10}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo-badge{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 200deg at 50% 50%,#6ee7ff, #63f5a0,#6ee7ff);filter:drop-shadow(0 0 12px #6ee7ff40)}
+    .logo h1{font-size:18px;margin:0;font-weight:700}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #2b3347;background:#11172a;border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted)}
+
+    .hero{padding:56px 0 24px;display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}}
+    .hero h2{font-size:44px;line-height:1.1;margin:0 0 14px}
+    .hero p{color:var(--muted);margin:0 0 18px}
+    .card{background:linear-gradient(180deg,#0f1526,#0d1221);border:1px solid #212943;border-radius:16px;box-shadow:0 10px 40px #00000055, inset 0 1px 0 #ffffff08}
+    .hero-card{padding:22px}
+    .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .badge{border:1px dashed #2b3347;padding:6px 10px;border-radius:12px;font-size:12px;color:#b8c2d1}
+
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    .btn{cursor:pointer;border:none;border-radius:12px;padding:12px 16px;font-weight:700;transition:transform .05s ease,box-shadow .2s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:linear-gradient(180deg,#6ee7ff,#63f5a0);color:#0a0f18;box-shadow:0 8px 24px #63f5a055}
+    .btn-ghost{background:#11172a;color:#cbd6e9;border:1px solid #27314a}
+    .mini{font-size:12px;color:#aeb7c7;margin-top:6px}
+
+    .ticker{display:flex;gap:16px;overflow:auto;padding:14px 4px}
+    .tick{white-space:nowrap;color:#a6b0c2;font-size:13px;border-right:1px solid #27314a;padding-right:16px}
+
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .feature{padding:18px}
+    .feature h3{margin:6px 0 8px;font-size:18px}
+    .feature p{margin:0;color:#b7c2d6;font-size:14px}
+
+    .testi{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);margin-top:8px}
+    @media (max-width:900px){.testi{grid-template-columns:1fr}}
+    .quote{padding:16px;display:flex;gap:12px}
+    .avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(180deg,#2a3552,#202944)}
+    .q-txt{font-size:14px;color:#c6d0e3}
+    .q-name{font-size:12px;color:#9aa3b2;margin-top:4px}
+
+    .pricing{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+    @media (max-width:900px){.pricing{grid-template-columns:1fr}}
+    .price{padding:18px;position:relative}
+    .ribbon{position:absolute;top:14px;right:-10px;transform:rotate(8deg);background:#141a2b;border:1px solid #2b3347;color:#9ad9ff;font-size:12px;padding:4px 10px;border-radius:8px}
+    .price h4{margin:2px 0 6px}
+    .price p{margin:0;color:#aeb7c7;font-size:14px}
+
+    .faq{display:grid;gap:10px}
+    details{background:#0e1425;border:1px solid #212943;border-radius:12px;padding:12px}
+    summary{cursor:pointer;font-weight:700}
+
+    footer{color:#8f98aa;padding:32px 0 48px}
+    .copy{opacity:.7;font-size:12px;margin-top:12px}
+
+    .marquee{display:flex;gap:18px;align-items:center;animation:scroll 22s linear infinite}
+    @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .badge-dot{width:6px;height:6px;border-radius:999px;background:var(--brand);box-shadow:0 0 10px var(--brand)}
+
+    .count{font-feature-settings:"tnum" 1, "lnum" 1; font-variant-numeric:tabular-nums;}
+
+    .modal-backdrop{position:fixed;inset:0;background:#0008;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{max-width:520px;width:100%;background:#0f1526;border:1px solid #212943;border-radius:16px;box-shadow:0 20px 60px #0008;padding:20px}
+    .modal h3{margin:0 0 10px}
+
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#12182a;border:1px solid #2a3550;color:#d7e3f6;padding:12px 16px;border-radius:12px;display:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="logo">
+        <div class="logo-badge" aria-hidden="true"></div>
+        <h1>진짜커피?<span style="color:#8fb6ff;font-size:12px;font-weight:600">™</span></h1>
+      </div>
+      <div class="pill"><span class="badge-dot"></span> 오늘의 스팸지수 <strong style="color:#fff">0.0%</strong> — 개인정보는 아무도 안 궁금해함</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h2>오늘도 묻습니다.<br/> <span style="background:linear-gradient(90deg,#6ee7ff,#63f5a0);-webkit-background-clip:text;background-clip:text;color:transparent">진짜커피?</span></h2>
+        <p>광고처럼 진지하고, 내용은 살짝 이상한 커피 초대 페이지. 한 번 클릭하면… 그냥 커피 마시는 겁니다. 카드정보 요구 안 하고, 약관도 안 길어요.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" id="go-now">지금 진짜커피 하러 가기</button>
+          <button class="btn btn-ghost" id="copy-btn">초대문구 복사하기</button>
+        </div>
+        <div class="mini">* 버튼을 누르면 단 하나의 보상이 제공됩니다: <strong>함께 커피</strong>.</div>
+        <div class="badge-row">
+          <span class="badge">ISO 114-514 인증(누가 줌?)</span>
+          <span class="badge">GDPR 준수(수집할 게 없음)</span>
+          <span class="badge">광고·스팸·피싱 무관</span>
+          <span class="badge">카페인 100% (대충 충분)</span>
+        </div>
+      </div>
+      <div class="card hero-card" aria-live="polite">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px">
+          <strong>오늘의 커피 슬롯</strong>
+          <span class="pill"><span class="badge-dot"></span> 실시간</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:baseline">
+          <div style="font-size:36px;font-weight:800" class="count" id="slots">3</div>
+          <div style="color:#9aa3b2">잔 남음*</div>
+        </div>
+        <div class="mini">* 누가 먼저 내려갔는지에 따라 변동됩니다. 기술적으로 매우 정확하지 않음.</div>
+        <hr style="border:none;border-top:1px solid #212943;margin:16px 0"/>
+        <div class="ticker">
+          <div class="tick">☕ 오늘의 원두: <strong>적당히 괜찮음</strong></div>
+          <div class="tick">🕒 추천 시간: <strong id="recommend">오후 3:00</strong></div>
+          <div class="tick">📍 장소: <strong>로비/1층 그 자동문 옆</strong></div>
+          <div class="tick">🎵 BGM: <strong>에스프레소 머신 ASMR</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin:16px 0 24px" class="marquee">
+      <div class="pill">신규 회원 혜택: 회원이 아님</div>
+      <div class="pill">한정 수량: 친구 수만큼</div>
+      <div class="pill">숨겨진 비용: 전혀 없음(근데 네가 살래?)</div>
+      <div class="pill">업무 생산성: 체감상 +7%</div>
+      <div class="pill">원가 절감: 집에서 내려오면 100%</div>
+    </section>
+
+    <section class="grid">
+      <article class="card feature">
+        <div class="badge">FEATURE 01</div>
+        <h3>원두보다 <em>사람</em> 중심</h3>
+        <p>산미, 바디감, 여운… 다 중요하지만 오늘은 대화가 더 진합니다. 필요한 건 의자와 10분의 여유뿐.</p>
+      </article>
+      <article class="card feature">
+        <div class="badge">FEATURE 02</div>
+        <h3>99.9% 스팸 같은 정성</h3>
+        <p>카운트다운, 리본 배지, ‘지금 신청’ 버튼까지. 그러나 결론은 단순합니다: 내려가서 커피.</p>
+      </article>
+      <article class="card feature">
+        <div class="badge">FEATURE 03</div>
+        <h3>데이터 최소 수집</h3>
+        <p>수집 항목: 이름(기억 안 날 수 있음), 선호 커피(현장에서 즉시 잊음). 저장 기간: 마실 때까지.</p>
+      </article>
+    </section>
+
+    <section style="margin-top:26px">
+      <h3 style="margin:6px 0 10px">솔직한 후기</h3>
+      <div class="testi">
+        <div class="card quote">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <div class="q-txt">“링크 눌렀더니 진짜 아무 일도 안 일어나고… 그냥 커피 마셨습니다. 좋아요.”</div>
+            <div class="q-name">— 직장인 A</div>
+          </div>
+        </div>
+        <div class="card quote">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <div class="q-txt">“약관 찾다가 잔 다 식을 뻔. 약관이 없더라고요.”</div>
+            <div class="q-name">— 커피 애호가 B</div>
+          </div>
+        </div>
+        <div class="card quote">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <div class="q-txt">“스팸처럼 보이는데 결제창이 없어 의심이 사라졌습니다.”</div>
+            <div class="q-name">— 보안 담당 C</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:26px">
+      <h3 style="margin:6px 0 10px">합리적인 가격표</h3>
+      <div class="pricing">
+        <div class="card price">
+          <div class="ribbon">베스트</div>
+          <h4>아메리카노</h4>
+          <p>가격: 시가(보통 0원, 가끔 누가 삼)</p>
+          <p class="mini">노트: 물 + 향 + 대화</p>
+        </div>
+        <div class="card price">
+          <h4>라떼</h4>
+          <p>가격: 우유의 용기만큼</p>
+          <p class="mini">라떼는 말이야 금지</p>
+        </div>
+        <div class="card price">
+          <h4>물</h4>
+          <p>가격: 0원</p>
+          <p class="mini">커피 못 마시는 분 환영</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:26px">
+      <h3 style="margin:6px 0 10px">FAQ — 자주 묻지 않지만 답함</h3>
+      <div class="faq">
+        <details>
+          <summary>정말 스팸인가요?</summary>
+          <p>아니요. 스팸처럼 생긴 커피 초대장입니다. 링크를 눌러도 돈이 빠져나가지 않습니다(돈은 카페에서 나갑니다).</p>
+        </details>
+        <details>
+          <summary>어디로 가면 되나요?</summary>
+          <p>보통 <strong>1층 로비</strong> 근처. 상황에 따라 메시지로 업데이트됩니다. 모르면 <em>향 따라오세요</em>.</p>
+        </details>
+        <details>
+          <summary>시간 약속이 있나요?</summary>
+          <p>권장 시간은 <span class="count" id="faq-time">오후 3:00</span>. 하지만 여러분의 마음속이 정했을 때가 최적의 타임.</p>
+        </details>
+        <details>
+          <summary>준비물은?</summary>
+          <p>카드, 현금, 또는 <em>친구가 사줄 거라는 믿음</em> 중 하나.</p>
+        </details>
+      </div>
+    </section>
+
+    <section style="margin:30px 0 10px;text-align:center">
+      <button class="btn btn-primary" id="big-cta" style="font-size:18px;padding:16px 22px">지금, 그냥 내려가기</button>
+      <div class="mini">* 본 페이지는 장난이지만, 커피는 진심입니다.</div>
+    </section>
+
+    <footer>
+      <hr style="border:none;border-top:1px solid #202842;margin:0 0 12px"/>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center">
+        <div>
+          <strong>진짜커피?</strong> — 스팸 같은 커피 초대 프로젝트
+          <div class="copy">© <span id="year"></span> Whoever Reads This. All rights probably reserved somewhere.</div>
+        </div>
+        <div class="mini">세부 약관: <em>없음</em> · 개인정보: <em>수집 불가(의지와 능력 모두 부족)</em></div>
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <h3>회의실 확보 현황</h3>
+      <p id="room-status">스캔 중… (진지)</p>
+      <div class="cta-row" style="justify-content:flex-end">
+        <button class="btn btn-ghost" id="close-modal">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">초대문구가 복사되었습니다. 채팅방에 붙여넣기!</div>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Recommended time (simple heuristic)
+    function toKST(date){
+      const utc = date.getTime() + (date.getTimezoneOffset()*60000);
+      const kstOffset = 9*60*60000; // UTC+9
+      return new Date(utc + kstOffset);
+    }
+    const nowKST = toKST(new Date());
+    const hour = nowKST.getHours();
+    const recommended = hour < 10 ? '오전 10:30' : hour < 15 ? '오후 3:00' : '오후 4:10';
+    document.getElementById('recommend').textContent = recommended;
+    document.getElementById('faq-time').textContent = recommended;
+
+    // Fake slots wiggle
+    const elSlots = document.getElementById('slots');
+    let slots = 3;
+    setInterval(()=>{ slots = Math.max(0, Math.min(9, slots + (Math.random()>0.6? -1: 1))); elSlots.textContent = slots; }, 3000);
+
+    // CTA actions
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg || t.textContent;
+      t.style.display = 'block';
+      setTimeout(()=> t.style.display = 'none', 1800);
+    }
+
+    document.getElementById('copy-btn').addEventListener('click', async ()=>{
+      const text = `진짜커피? 오늘 ${recommended} 1층 로비`; 
+      try{ await navigator.clipboard.writeText(text); showToast('초대문구가 복사되었습니다. 채팅방에 붙여넣기!'); }catch(e){ showToast('복사가 어려워요! 수동으로 부탁 🙏'); }
+    });
+
+    function openModal(){
+      const m = document.getElementById('modal');
+      m.style.display = 'flex';
+      const status = document.getElementById('room-status');
+      status.textContent = '스캔 중… (진지)';
+      setTimeout(()=> status.textContent = '결과: 회의실 없음. 대신 마음의 준비 완료.', 1200);
+    }
+
+    document.getElementById('go-now').addEventListener('click', openModal);
+
+    document.getElementById('close-modal').addEventListener('click', ()=>{
+      document.getElementById('modal').style.display = 'none';
+    });
+
+    document.getElementById('big-cta').addEventListener('click', ()=>{
+      // Subtle confetti-ish effect using emoji
+      const burst = document.createElement('div');
+      burst.style.position='fixed'; burst.style.inset='0'; burst.style.pointerEvents='none';
+      for(let i=0;i<24;i++){
+        const s = document.createElement('div');
+        s.textContent = ['☕','✨','💬','🫘'][i%4];
+        s.style.position='absolute';
+        s.style.left = Math.random()*100+'%';
+        s.style.top = '-20px';
+        s.style.fontSize = (16+Math.random()*20)+'px';
+        s.style.opacity = .9;
+        s.style.transition = 'transform 1.2s cubic-bezier(.2,.6,.2,1), opacity 1.2s';
+        burst.appendChild(s);
+        requestAnimationFrame(()=>{
+          s.style.transform = `translateY(${80+Math.random()*120}vh) rotate(${(Math.random()-.5)*120}deg)`;
+          s.style.opacity = 0;
+        });
+      }
+      document.body.appendChild(burst);
+      setTimeout(()=> burst.remove(), 1400);
+      showToast('출발! 엘리베이터 앞에서 만나요.');
+    });
+  </script>
+</body>
+</html>
