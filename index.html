@@ -3,246 +3,280 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>블록 아트 생성기 (문자 → ㅁ/이모지)</title>
+  <title>블록 아트 생성기 (문자 → ㅁ/이모지/임의문자) – 메신저 폭 튜닝</title>
   <style>
-    :root {
-      --bg: #f7f7fb; --card: #ffffff; --ink: #111827; --muted: #6b7280; --brand:#4f46e5;
-    }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif; background: var(--bg); color: var(--ink); }
-    .wrap { max-width: 1024px; margin: 0 auto; padding: 24px; }
-    .card { background: var(--card); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.06); padding: 16px; }
-    h1 { font-size: clamp(20px, 3vw, 28px); margin: 0 0 8px; }
-    p.small { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
-    .grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-    .row { display: grid; gap: 6px; }
-    label { font-size: 13px; color: var(--muted); }
-    input[type="text"], input[type="number"], button, select { height: 40px; }
-    input[type="text"], input[type="number"], select {
-      width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0 12px; background: white;
-      outline: none; transition: box-shadow .15s, border-color .15s;
-    }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
-    input[type="range"] { width: 100%; }
-    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .btn { border: 0; background: var(--brand); color: white; border-radius: 10px; padding: 0 12px; cursor: pointer; }
-    .btn:hover { filter: brightness(0.95); }
-    .btn-ghost { background: #eef2ff; color: #3730a3; }
-    .mono { white-space: pre; overflow: auto; background: #0b1020; color: #e5e7eb; border-radius: 12px; padding: 12px; line-height: 1em; font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .hint { font-size: 12px; color: var(--muted); }
-    .row-inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .switch { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; }
-    .footer { color: var(--muted); font-size: 12px; margin-top: 8px; }
+    :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --brand:#4f46e5; }
+    *{box-sizing:border-box}
+    body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif; background:var(--bg); color:var(--ink)}
+    .wrap{max-width:1024px; margin:0 auto; padding:24px}
+    .card{background:var(--card); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.06); padding:16px}
+    h1{font-size:clamp(20px,3vw,28px); margin:0 0 8px}
+    p.small{color:var(--muted); margin:0 0 16px; font-size:13px}
+    .grid{display:grid; gap:12px; grid-template-columns:1fr}
+    @media (min-width:768px){ .grid-3{ grid-template-columns:repeat(3,1fr)} }
+    .row{display:grid; gap:6px}
+    label{font-size:13px; color:var(--muted)}
+    input[type="text"], input[type="number"], button, select{height:40px}
+    input[type="text"], input[type="number"], select{width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:0 12px; background:#fff; outline:none; transition: box-shadow .15s,border-color .15s}
+    input[type="text"]:focus, input[type="number"]:focus, select:focus{border-color:var(--brand); box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+    input[type="range"]{width:100%}
+    .controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+    .btn{border:0; background:var(--brand); color:#fff; border-radius:10px; padding:0 12px; cursor:pointer}
+    .btn:hover{filter:brightness(.95)}
+    .btn-ghost{background:#eef2ff; color:#3730a3}
+    .mono{white-space:pre; overflow:auto; background:#0b1020; color:#e5e7eb; border-radius:12px; padding:12px; line-height:1em; font-family: ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace}
+    .hint{font-size:12px; color:var(--muted)}
+    .row-inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .switch{display:inline-flex; gap:6px; align-items:center; font-size:13px}
+    .footer{color:var(--muted); font-size:12px; margin-top:8px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <div class="row-inline" style="justify-content: space-between;">
-        <h1>블록 아트 생성기 (문자 → ㅁ/이모지/임의문자)</h1>
+      <div class="row-inline" style="justify-content:space-between;">
+        <h1>블록 아트 생성기 – 메신저용 폭/여백 제어</h1>
         <div class="controls">
           <button class="btn btn-ghost" id="presetPc" title="PC 해상도 프리셋">PC(64)</button>
           <button class="btn btn-ghost" id="presetMo" title="모바일 해상도 프리셋">Mobile(20)</button>
         </div>
       </div>
-      <p class="small">입력한 글자를 캔버스에 그려서 샘플링한 뒤, 선택한 문자(ㅁ/이모지 등)로 변환합니다. 한글·영문·이모지 모두 가능. :emoji: 단축어 일부 지원(예: <code>:coffee:</code> → ☕).</p>
+      <p class="small">이 도구는 입력 텍스트를 캔버스에 렌더링해 샘플링한 뒤, 각 셀을 <b>사용자 지정 폭</b>의 문자열로 치환해 줍니다. 메신저에서 특정 이모지/문자가 약 <b>N칸</b>을 차지하도록 보이게 하려면 아래의 <b>셀 폭(칸)</b>과 <b>가정 문자 폭(칸)</b>을 조정하세요.</p>
 
       <div class="grid grid-3">
         <div class="row">
           <label>텍스트</label>
-          <input type="text" id="text" placeholder="예: 따 or Hello or 안녕 😀" value="따" />
-          <div class="hint">둘 이상 글자는 해상도(가로 블록 수)를 올리세요.</div>
+          <input type="text" id="text" placeholder="예: 따 / Hello / 안녕 😀" value="따" />
+          <div class="hint">둘 이상 글자는 해상도(가로 블록 수)를 올리면 윤곽이 좋아집니다.</div>
         </div>
         <div class="row">
           <label>가로 블록 수: <span id="colsVal">64</span></label>
           <input type="range" id="cols" min="8" max="160" value="64" />
-          <div class="hint">모바일은 8–24 권장. 화면이 좁을수록 낮추기.</div>
+          <div class="hint">모바일 8–24 권장. 화면이 좁을수록 낮추세요.</div>
         </div>
         <div class="row">
           <label>감도(임계값): <span id="thVal">140</span></label>
           <input type="range" id="th" min="40" max="220" value="140" />
-          <div class="hint">낮출수록 더 진하게 채워집니다.</div>
+          <div class="hint">낮을수록 더 진하게 채워집니다.</div>
         </div>
       </div>
 
-      <div class="grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="row">
-          <label>블록(전경) 문자 (이모지 가능)</label>
-          <input type="text" id="fg" value="ㅁ" />
-          <div class="hint">예: ㅁ, █, ●, 😀, ☕, or <code>:coffee:</code> (일부 단축어 지원)</div>
+          <label>채워진 셀(전경) 문자</label>
+          <input type="text" id="fg" value=":coffee:" />
+          <div class="hint">예: ㅁ, █, ●, 😀, ☕, 또는 <code>:coffee:</code> 처럼 단축어. (일부 지원)</div>
         </div>
         <div class="row">
-          <label>배경 문자</label>
+          <label>빈 셀(배경) 문자</label>
           <input type="text" id="bg" value="　" />
-          <div class="hint">기본은 전각 공백(U+3000) – 폭 정렬에 유리</div>
+          <div class="hint">전각 공백(U+3000) 기본 – 폭 정렬에 유리</div>
         </div>
       </div>
 
-      <div class="row-inline" style="margin: 8px 0; gap: 16px;">
-        <label class="switch"><input type="checkbox" id="bold" checked> 굵게(bold)</label>
-        <label class="switch">줄 간격(빈 줄): <input type="number" id="linespace" min="0" max="3" value="0" style="width:64px"></label>
-        <label class="switch">폰트:
-          <select id="fontSel">
-            <option value="Apple SD Gothic Neo,Malgun Gothic,Noto Sans KR,Arial Unicode MS,sans-serif">한글 가독성</option>
-            <option value="Noto Sans KR,Apple SD Gothic Neo,Malgun Gothic,Arial Unicode MS,sans-serif">Noto Sans KR</option>
-            <option value="Segoe UI,Roboto,system-ui,sans-serif">영문 위주</option>
-            <option value="ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace">Monospace</option>
-          </select>
-        </label>
-        <div class="controls">
-          <button class="btn" id="copyBtn">결과 복사</button>
-          <button class="btn" id="downloadBtn">.txt 저장</button>
+      <div class="grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="row">
+          <label>셀 폭(칸)</label>
+          <input type="number" id="cellCols" min="1" max="20" value="6" />
+          <div class="hint">메신저에서 한 셀이 차지하길 원하는 총 칸 수 (예: 6)</div>
         </div>
+        <div class="row">
+          <label>가정 문자 폭(칸)</label>
+          <input type="number" id="glyphCols" min="0" max="20" value="2" />
+          <div class="hint">채워진 셀에 쓸 문자/이모지가 실제로 차지하는 칸 수 가정치 (예: 😀≈2)</div>
+        </div>
+        <div class="row">
+          <label>세로 반복(줄)</label>
+          <input type="number" id="cellRows" min="1" max="4" value="1" />
+          <div class="hint">한 셀을 세로로 몇 줄로 늘려 보일지 (메신저 종횡비 보정)</div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
+        <div class="row">
+          <label>좌/우 래퍼(선택)</label>
+          <div class="row-inline">
+            <input type="text" id="wrapL" value="[" style="width:80px" />
+            <span>… 내용 …</span>
+            <input type="text" id="wrapR" value="]" style="width:80px" />
+          </div>
+          <div class="hint">예: <code>[   ]</code> 모양을 원하면 셀 폭을 6, 가정 문자 폭을 0으로 두고 래퍼를 [ / ] 로 설정</div>
+        </div>
+        <div class="row">
+          <label class="switch"><input type="checkbox" id="bold" checked> 굵게(bold, 렌더링용)</label>
+          <label class="switch">줄 간격(빈 줄): <input type="number" id="linespace" min="0" max="3" value="0" style="width:64px"></label>
+          <label class="switch">폰트:
+            <select id="fontSel">
+              <option value="Apple SD Gothic Neo,Malgun Gothic,Noto Sans KR,Arial Unicode MS,sans-serif">한글 가독성</option>
+              <option value="Noto Sans KR,Apple SD Gothic Neo,Malgun Gothic,Arial Unicode MS,sans-serif">Noto Sans KR</option>
+              <option value="Segoe UI,Roboto,system-ui,sans-serif">영문 위주</option>
+              <option value="ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace">Monospace</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="controls" style="margin:8px 0; gap:12px;">
+        <button class="btn" id="copyBtn">결과 복사</button>
+        <button class="btn" id="downloadBtn">.txt 저장</button>
       </div>
 
       <div class="row">
         <label>결과</label>
-        <pre id="out" class="mono" style="min-height: 160px;">(여기에 결과가 표시됩니다)</pre>
+        <pre id="out" class="mono" style="min-height:160px;">(여기에 결과가 표시됩니다)</pre>
       </div>
 
       <canvas id="hiddenCanvas" width="1" height="1" style="display:none"></canvas>
-      <div class="footer">팁: 단색 문자(ㅁ, █ 등)일수록 깔끔합니다. 이모지는 폭이 일정치 않아 줄맞춤이 약간 어긋날 수 있어요.</div>
+      <div class="footer">참고: 메신저마다 이모지 가로폭이 다릅니다. 위의 <b>가정 문자 폭</b>을 조절해 실제 보이는 것에 맞춰보세요. 틀어지면 Monospace 문자(ㅁ/█ 등)를 써보세요.</div>
     </div>
   </div>
 
   <script>
-    // 간단한 :emoji: 단축어 매핑 (필요 시 추가)
-    const EMOJI_MAP = {
-      ":coffee:": "☕", ":fire:": "🔥", ":star:": "⭐", ":sparkles:": "✨",
-      ":heart:": "❤️", ":thumbsup:": "👍", ":clap:": "👏", ":check:": "✅",
-      ":x:": "❌", ":smile:": "😄", ":lol:": "😂", ":rocket:": "🚀"
-    };
-    function resolveEmojiShortcodes(s) {
-      return s.replace(/:[a-z0-9_+-]+:/gi, m => EMOJI_MAP[m.toLowerCase()] || m);
-    }
+    // 간단한 :emoji: 단축어 매핑 (필요 시 확장)
+    const EMOJI_MAP = {":coffee:":"☕", ":fire:":"🔥", ":star:":"⭐", ":sparkles:":"✨", ":heart:":"❤️", ":thumbsup:":"👍", ":clap:":"👏", ":check:":"✅", ":x:":"❌", ":smile:":"😄", ":lol:":"😂", ":rocket:":"🚀"};
+    const resolveEmojiShortcodes = s => s.replace(/:[a-z0-9_+-]+:/gi, m => EMOJI_MAP[m.toLowerCase()] || m);
 
-    // 첫 번째 그래피메(이모지 포함) 안전 추출
-    function firstGrapheme(str, fallback = "ㅁ") {
-      if (!str) return fallback;
+    function firstGrapheme(str, fallback = "ㅁ"){
+      if(!str) return fallback;
       const s = resolveEmojiShortcodes(str.trim());
-      if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-        const seg = new Intl.Segmenter('ko', { granularity: 'grapheme' });
+      if (typeof Intl !== 'undefined' && Intl.Segmenter){
+        const seg = new Intl.Segmenter('ko', {granularity:'grapheme'});
         const it = seg.segment(s)[Symbol.iterator]();
-        const { value } = it.next();
+        const {value} = it.next();
         return value ? value.segment : fallback;
       }
-      // Fallback: 눈물의 naive - 이모지 결합문자엔 완벽하진 않음
-      return s.codePointAt ? String.fromCodePoint(s.codePointAt(0)) : (s[0] || fallback);
+      return s.codePointAt ? String.fromCodePoint(s.codePointAt(0)) : (s[0]||fallback);
     }
 
-    const qs = sel => document.querySelector(sel);
-    const text = qs('#text');
-    const cols = qs('#cols');
-    const colsVal = qs('#colsVal');
-    const th = qs('#th');
-    const thVal = qs('#thVal');
-    const fg = qs('#fg');
-    const bg = qs('#bg');
-    const bold = qs('#bold');
-    const linespace = qs('#linespace');
-    const out = qs('#out');
-    const fontSel = qs('#fontSel');
-    const canvas = qs('#hiddenCanvas');
-    const presetPc = qs('#presetPc');
-    const presetMo = qs('#presetMo');
-    const copyBtn = qs('#copyBtn');
-    const downloadBtn = qs('#downloadBtn');
+    const $ = sel => document.querySelector(sel);
+    const text = $('#text');
+    const cols = $('#cols');
+    const colsVal = $('#colsVal');
+    const th = $('#th');
+    const thVal = $('#thVal');
+    const fg = $('#fg');
+    const bg = $('#bg');
+    const bold = $('#bold');
+    const linespace = $('#linespace');
+    const out = $('#out');
+    const fontSel = $('#fontSel');
+    const canvas = $('#hiddenCanvas');
+    const presetPc = $('#presetPc');
+    const presetMo = $('#presetMo');
+    const copyBtn = $('#copyBtn');
+    const downloadBtn = $('#downloadBtn');
+
+    const cellCols = $('#cellCols');
+    const glyphCols = $('#glyphCols');
+    const cellRows = $('#cellRows');
+    const wrapL = $('#wrapL');
+    const wrapR = $('#wrapR');
 
     // 초기값: 모바일이면 20, PC면 64
     if (window.innerWidth < 640) cols.value = 20;
     colsVal.textContent = cols.value;
     thVal.textContent = th.value;
 
-    function render() {
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    function buildCell(isFilled){
+      const total = Math.max(1, parseInt(cellCols.value||'6', 10));
+      const assumed = Math.max(0, parseInt(glyphCols.value||'2', 10));
+      const L = wrapL.value || '';
+      const R = wrapR.value || '';
+      const core = isFilled ? firstGrapheme(fg.value, 'ㅁ') : '';
+      const coreAssumed = isFilled ? assumed : 0;
+      const innerSpaces = Math.max(0, total - coreAssumed - L.length - R.length);
+      return L + (core || '') + ' '.repeat(innerSpaces) + R;
+    }
+
+    function buildEmptyCell(){
+      return buildCell(false);
+    }
+
+    function render(){
+      const ctx = canvas.getContext('2d', { willReadFrequently:true });
       const txt = text.value || '';
-      const fgChar = firstGrapheme(fg.value, 'ㅁ');
-      const bgChar = firstGrapheme(bg.value || '\u3000', '\u3000');
       const threshold = parseInt(th.value, 10) || 140;
       const weight = bold.checked ? 800 : 400;
       const font = fontSel.value;
 
       if (!txt.trim()) { out.textContent = ''; return; }
 
-      // 캔버스에 크게 그린 다음 샘플링
+      // 캔버스 렌더링 (윤곽 추출 전용)
       const baseFontSize = 240;
       ctx.font = `${weight} ${baseFontSize}px ${font}`;
       const metrics = ctx.measureText(txt);
       const textWidth = Math.ceil(metrics.width) + 40;
-      const ascent = Math.ceil(metrics.actualBoundingBoxAscent || baseFontSize * 0.8);
-      const descent = Math.ceil(metrics.actualBoundingBoxDescent || baseFontSize * 0.2);
+      const ascent = Math.ceil(metrics.actualBoundingBoxAscent || baseFontSize*0.8);
+      const descent = Math.ceil(metrics.actualBoundingBoxDescent || baseFontSize*0.2);
       const textHeight = ascent + descent + 40;
 
       canvas.width = Math.max(1, textWidth);
       canvas.height = Math.max(1, textHeight);
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle = '#000000';
       ctx.textBaseline = 'alphabetic';
       ctx.font = `${weight} ${baseFontSize}px ${font}`;
-      ctx.fillText(txt, 20, 20 + ascent);
+      ctx.fillText(txt, 20, 20+ascent);
 
-      const COLS = Math.max(1, parseInt(cols.value, 10) || 64);
-      const ROWS = Math.max(1, Math.round((canvas.height / canvas.width) * COLS));
+      const COLS = Math.max(1, parseInt(cols.value,10) || 64);
+      const ROWS = Math.max(1, Math.round((canvas.height/canvas.width) * COLS));
 
-      const img = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const img = ctx.getImageData(0,0,canvas.width,canvas.height).data;
       const cellW = canvas.width / COLS;
       const cellH = canvas.height / ROWS;
 
+      const filledCell = buildCell(true);
+      const emptyCell = buildEmptyCell();
+
       const lines = [];
-      for (let r = 0; r < ROWS; r++) {
+      for (let r=0; r<ROWS; r++){
         let line = '';
-        for (let c = 0; c < COLS; c++) {
-          const x0 = Math.floor(c * cellW);
-          const y0 = Math.floor(r * cellH);
-          const x1 = Math.min(canvas.width, Math.floor((c + 1) * cellW));
-          const y1 = Math.min(canvas.height, Math.floor((r + 1) * cellH));
-          let sum = 0, cnt = 0;
-          for (let y = y0; y < y1; y++) {
-            for (let x = x0; x < x1; x++) {
-              const idx = (y * canvas.width + x) * 4;
-              const lum = (img[idx] + img[idx+1] + img[idx+2]) / 3; // 단순 평균
+        for (let c=0; c<COLS; c++){
+          const x0 = Math.floor(c*cellW);
+          const y0 = Math.floor(r*cellH);
+          const x1 = Math.min(canvas.width, Math.floor((c+1)*cellW));
+          const y1 = Math.min(canvas.height, Math.floor((r+1)*cellH));
+          let sum=0, cnt=0;
+          for (let y=y0; y<y1; y++){
+            for (let x=x0; x<x1; x++){
+              const idx = (y*canvas.width + x)*4;
+              const lum = (img[idx]+img[idx+1]+img[idx+2])/3;
               sum += lum; cnt++;
             }
           }
-          const avg = cnt ? sum / cnt : 255;
-          line += (avg < threshold) ? fgChar : bgChar;
+          const avg = cnt ? sum/cnt : 255;
+          line += (avg < threshold) ? filledCell : emptyCell;
         }
-        lines.push(line);
-        const extra = Math.max(0, Math.min(3, parseInt(linespace.value || '0', 10)));
-        for (let k = 0; k < extra; k++) lines.push('');
+        const vr = Math.max(1, Math.min(4, parseInt(cellRows.value||'1',10)));
+        for (let k=0; k<vr; k++) lines.push(line);
+        const extra = Math.max(0, Math.min(3, parseInt(linespace.value||'0',10)));
+        for (let k=0; k<extra; k++) lines.push('');
       }
-      while (lines.length && lines[0].trim().length === 0) lines.shift();
-      while (lines.length && lines[lines.length-1].trim().length === 0) lines.pop();
+      while (lines.length && lines[0].trim().length===0) lines.shift();
+      while (lines.length && lines[lines.length-1].trim().length===0) lines.pop();
 
       out.textContent = lines.join('\n');
       colsVal.textContent = COLS;
       thVal.textContent = threshold;
     }
 
-    [text, cols, th, fg, bg, bold, linespace, fontSel].forEach(el => el.addEventListener('input', render));
-    window.addEventListener('resize', () => { /* no-op autoscale */ });
+    [text, cols, th, fg, bg, bold, linespace, fontSel, cellCols, glyphCols, cellRows, wrapL, wrapR].forEach(el => el.addEventListener('input', render));
 
+    window.addEventListener('resize', () => {});
     presetPc.addEventListener('click', () => { cols.value = 64; render(); });
     presetMo.addEventListener('click', () => { cols.value = 20; render(); });
 
     copyBtn.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(out.textContent || ''); } catch(e) { alert('클립보드 복사 실패: ' + e); }
+      try { await navigator.clipboard.writeText(out.textContent || ''); } catch(e) { alert('클립보드 복사 실패: '+e); }
     });
-
     downloadBtn.addEventListener('click', () => {
-      const blob = new Blob([out.textContent || ''], { type: 'text/plain;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'block-art.txt';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
+      const blob = new Blob([out.textContent||''], {type:'text/plain;charset=utf-8'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'block-art.txt';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
     });
 
-    // 최초 렌더
+    // 초기 렌더
     render();
   </script>
 </body>
