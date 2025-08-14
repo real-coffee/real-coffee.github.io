@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>블록 아트 생성기 (문자 → ㅁ/이모지/임의문자) – 메신저 폭 튜닝</title>
+  <title>블록 아트 생성기 (Slack 이모지 shortcode 모드 지원)</title>
   <style>
     :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --brand:#4f46e5; }
     *{box-sizing:border-box}
@@ -29,25 +29,26 @@
     .row-inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .switch{display:inline-flex; gap:6px; align-items:center; font-size:13px}
     .footer{color:var(--muted); font-size:12px; margin-top:8px}
+    .muted{color:var(--muted); font-size:12px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <div class="row-inline" style="justify-content:space-between;">
-        <h1>블록 아트 생성기 – 메신저용 폭/여백 제어</h1>
+        <h1>블록 아트 생성기 – Slack 이모지(shortcode) 아스키 아트</h1>
         <div class="controls">
           <button class="btn btn-ghost" id="presetPc" title="PC 해상도 프리셋">PC(64)</button>
           <button class="btn btn-ghost" id="presetMo" title="모바일 해상도 프리셋">Mobile(20)</button>
         </div>
       </div>
-      <p class="small">이 도구는 입력 텍스트를 캔버스에 렌더링해 샘플링한 뒤, 각 셀을 <b>사용자 지정 폭</b>의 문자열로 치환해 줍니다. 메신저에서 특정 이모지/문자가 약 <b>N칸</b>을 차지하도록 보이게 하려면 아래의 <b>셀 폭(칸)</b>과 <b>가정 문자 폭(칸)</b>을 조정하세요.</p>
+      <p class="small">입력 텍스트를 캔버스에 렌더링해 샘플링한 뒤, 각 셀을 <b>공백과 Slack 이모지 shortcode</b>(예: <code>:thumbsy2:</code>)로만 출력합니다. 그대로 복사→Slack에 붙여넣으면 블록 아트처럼 보입니다.</p>
 
       <div class="grid grid-3">
         <div class="row">
           <label>텍스트</label>
-          <input type="text" id="text" placeholder="예: 따 / Hello / 안녕 😀" value="따" />
-          <div class="hint">둘 이상 글자는 해상도(가로 블록 수)를 올리면 윤곽이 좋아집니다.</div>
+          <input type="text" id="text" placeholder="예: 따 / Hello / 안녕" value="따" />
+          <div class="hint">둘 이상 글자는 해상도(가로 블록 수)를 올리면 윤곽이 또렷합니다.</div>
         </div>
         <div class="row">
           <label>가로 블록 수: <span id="colsVal">64</span></label>
@@ -61,46 +62,29 @@
         </div>
       </div>
 
-      <div class="grid" style="grid-template-columns:1fr 1fr;">
-        <div class="row">
-          <label>채워진 셀(전경) 문자</label>
-          <input type="text" id="fg" value=":coffee:" />
-          <div class="hint">예: ㅁ, █, ●, 😀, ☕, 또는 <code>:coffee:</code> 처럼 단축어. (일부 지원)</div>
-        </div>
-        <div class="row">
-          <label>빈 셀(배경) 문자</label>
-          <input type="text" id="bg" value="　" />
-          <div class="hint">전각 공백(U+3000) 기본 – 폭 정렬에 유리</div>
-        </div>
-      </div>
-
       <div class="grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="row">
+          <label>이모지 shortcode</label>
+          <input type="text" id="fg" value=":thumbsy2:" />
+          <div class="hint">예: <code>:thumbsy2:</code>, <code>:fire:</code>, <code>:rocket:</code> 등. 그대로 출력됩니다.</div>
+        </div>
         <div class="row">
           <label>셀 폭(칸)</label>
           <input type="number" id="cellCols" min="1" max="20" value="6" />
-          <div class="hint">메신저에서 한 셀이 차지하길 원하는 총 칸 수 (예: 6)</div>
+          <div class="hint">한 셀이 Slack에서 차지하길 원하는 총 칸(문자) 폭. 예: 6</div>
         </div>
         <div class="row">
-          <label>가정 문자 폭(칸)</label>
-          <input type="number" id="glyphCols" min="0" max="20" value="2" />
-          <div class="hint">채워진 셀에 쓸 문자/이모지가 실제로 차지하는 칸 수 가정치 (예: 😀≈2)</div>
-        </div>
-        <div class="row">
-          <label>세로 반복(줄)</label>
-          <input type="number" id="cellRows" min="1" max="4" value="1" />
-          <div class="hint">한 셀을 세로로 몇 줄로 늘려 보일지 (메신저 종횡비 보정)</div>
+          <label>이모지 가정 폭(칸)</label>
+          <input type="number" id="glyphCols" min="0" max="20" value="5" />
+          <div class="hint">Slack에서 해당 이모지의 대략적 폭(예: 5 또는 6). 남는 칸은 공백으로 우측 패딩.</div>
         </div>
       </div>
 
       <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="row">
-          <label>좌/우 래퍼(선택)</label>
-          <div class="row-inline">
-            <input type="text" id="wrapL" value="[" style="width:80px" />
-            <span>… 내용 …</span>
-            <input type="text" id="wrapR" value="]" style="width:80px" />
-          </div>
-          <div class="hint">예: <code>[   ]</code> 모양을 원하면 셀 폭을 6, 가정 문자 폭을 0으로 두고 래퍼를 [ / ] 로 설정</div>
+          <label>세로 반복(줄)</label>
+          <input type="number" id="cellRows" min="1" max="4" value="1" />
+          <div class="hint">한 셀(한 줄)을 수직으로 복제하여 종횡비를 조정</div>
         </div>
         <div class="row">
           <label class="switch"><input type="checkbox" id="bold" checked> 굵게(bold, 렌더링용)</label>
@@ -122,32 +106,16 @@
       </div>
 
       <div class="row">
-        <label>결과</label>
+        <label>결과 (공백+shortcode만 포함)</label>
         <pre id="out" class="mono" style="min-height:160px;">(여기에 결과가 표시됩니다)</pre>
       </div>
 
       <canvas id="hiddenCanvas" width="1" height="1" style="display:none"></canvas>
-      <div class="footer">참고: 메신저마다 이모지 가로폭이 다릅니다. 위의 <b>가정 문자 폭</b>을 조절해 실제 보이는 것에 맞춰보세요. 틀어지면 Monospace 문자(ㅁ/█ 등)를 써보세요.</div>
+      <div class="footer">주의: Slack/OS/폰트에 따라 이모지 가로폭이 달라 보일 수 있습니다. <b>이모지 가정 폭</b>을 조절해 실제 결과에 맞춰보세요. 출력은 항상 "공백 + :emoji_name:"만 사용합니다.</div>
     </div>
   </div>
 
   <script>
-    // 간단한 :emoji: 단축어 매핑 (필요 시 확장)
-    const EMOJI_MAP = {":coffee:":"☕", ":fire:":"🔥", ":star:":"⭐", ":sparkles:":"✨", ":heart:":"❤️", ":thumbsup:":"👍", ":clap:":"👏", ":check:":"✅", ":x:":"❌", ":smile:":"😄", ":lol:":"😂", ":rocket:":"🚀"};
-    const resolveEmojiShortcodes = s => s.replace(/:[a-z0-9_+-]+:/gi, m => EMOJI_MAP[m.toLowerCase()] || m);
-
-    function firstGrapheme(str, fallback = "ㅁ"){
-      if(!str) return fallback;
-      const s = resolveEmojiShortcodes(str.trim());
-      if (typeof Intl !== 'undefined' && Intl.Segmenter){
-        const seg = new Intl.Segmenter('ko', {granularity:'grapheme'});
-        const it = seg.segment(s)[Symbol.iterator]();
-        const {value} = it.next();
-        return value ? value.segment : fallback;
-      }
-      return s.codePointAt ? String.fromCodePoint(s.codePointAt(0)) : (s[0]||fallback);
-    }
-
     const $ = sel => document.querySelector(sel);
     const text = $('#text');
     const cols = $('#cols');
@@ -155,7 +123,6 @@
     const th = $('#th');
     const thVal = $('#thVal');
     const fg = $('#fg');
-    const bg = $('#bg');
     const bold = $('#bold');
     const linespace = $('#linespace');
     const out = $('#out');
@@ -169,8 +136,6 @@
     const cellCols = $('#cellCols');
     const glyphCols = $('#glyphCols');
     const cellRows = $('#cellRows');
-    const wrapL = $('#wrapL');
-    const wrapR = $('#wrapR');
 
     // 초기값: 모바일이면 20, PC면 64
     if (window.innerWidth < 640) cols.value = 20;
@@ -179,17 +144,14 @@
 
     function buildCell(isFilled){
       const total = Math.max(1, parseInt(cellCols.value||'6', 10));
-      const assumed = Math.max(0, parseInt(glyphCols.value||'2', 10));
-      const L = wrapL.value || '';
-      const R = wrapR.value || '';
-      const core = isFilled ? firstGrapheme(fg.value, 'ㅁ') : '';
-      const coreAssumed = isFilled ? assumed : 0;
-      const innerSpaces = Math.max(0, total - coreAssumed - L.length - R.length);
-      return L + (core || '') + ' '.repeat(innerSpaces) + R;
-    }
-
-    function buildEmptyCell(){
-      return buildCell(false);
+      const assumed = Math.max(0, parseInt(glyphCols.value||'5', 10));
+      if (isFilled){
+        const token = fg.value || ':emoji:'; // 그대로 출력
+        const pad = Math.max(0, total - assumed);
+        return token + ' '.repeat(pad);
+      } else {
+        return ' '.repeat(total);
+      }
     }
 
     function render(){
@@ -227,7 +189,7 @@
       const cellH = canvas.height / ROWS;
 
       const filledCell = buildCell(true);
-      const emptyCell = buildEmptyCell();
+      const emptyCell = buildCell(false);
 
       const lines = [];
       for (let r=0; r<ROWS; r++){
@@ -241,7 +203,7 @@
           for (let y=y0; y<y1; y++){
             for (let x=x0; x<x1; x++){
               const idx = (y*canvas.width + x)*4;
-              const lum = (img[idx]+img[idx+1]+img[idx+2])/3;
+              const lum = (img[idx]+img[idx+1]+img[idx+2])/3; // 평균 명도
               sum += lum; cnt++;
             }
           }
@@ -256,12 +218,13 @@
       while (lines.length && lines[0].trim().length===0) lines.shift();
       while (lines.length && lines[lines.length-1].trim().length===0) lines.pop();
 
-      out.textContent = lines.join('\n');
+      out.textContent = lines.join('
+');
       colsVal.textContent = COLS;
       thVal.textContent = threshold;
     }
 
-    [text, cols, th, fg, bg, bold, linespace, fontSel, cellCols, glyphCols, cellRows, wrapL, wrapR].forEach(el => el.addEventListener('input', render));
+    [text, cols, th, fg, bold, linespace, fontSel, cellCols, glyphCols, cellRows].forEach(el => el.addEventListener('input', render));
 
     window.addEventListener('resize', () => {});
     presetPc.addEventListener('click', () => { cols.value = 64; render(); });
