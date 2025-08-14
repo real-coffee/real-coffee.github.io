@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>블록 아트 생성기 (Slack 이모지 shortcode 모드 지원)</title>
+  <title>블록 아트 생성기 (Slack 이모지 shortcode 전용)</title>
   <style>
     :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --brand:#4f46e5; }
     *{box-sizing:border-box}
@@ -36,13 +36,13 @@
   <div class="wrap">
     <div class="card">
       <div class="row-inline" style="justify-content:space-between;">
-        <h1>블록 아트 생성기 – Slack 이모지(shortcode) 아스키 아트</h1>
+        <h1>Slack 이모지 블록 아트 (공백 + :emoji: 전용)</h1>
         <div class="controls">
           <button class="btn btn-ghost" id="presetPc" title="PC 해상도 프리셋">PC(64)</button>
           <button class="btn btn-ghost" id="presetMo" title="모바일 해상도 프리셋">Mobile(20)</button>
         </div>
       </div>
-      <p class="small">입력 텍스트를 캔버스에 렌더링해 샘플링한 뒤, 각 셀을 <b>공백과 Slack 이모지 shortcode</b>(예: <code>:thumbsy2:</code>)로만 출력합니다. 그대로 복사→Slack에 붙여넣으면 블록 아트처럼 보입니다.</p>
+      <p class="small">출력은 <b>오직 공백과 입력한 이모지 shortcode</b>(예: <code>:thumbsy2:</code>)만 사용합니다. 그대로 복사→Slack에 붙여넣으세요.</p>
 
       <div class="grid grid-3">
         <div class="row">
@@ -62,21 +62,16 @@
         </div>
       </div>
 
-      <div class="grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="grid" style="grid-template-columns:1fr 1fr;">
         <div class="row">
           <label>이모지 shortcode</label>
           <input type="text" id="fg" value=":thumbsy2:" />
           <div class="hint">예: <code>:thumbsy2:</code>, <code>:fire:</code>, <code>:rocket:</code> 등. 그대로 출력됩니다.</div>
         </div>
         <div class="row">
-          <label>셀 폭(칸)</label>
-          <input type="number" id="cellCols" min="1" max="20" value="6" />
-          <div class="hint">한 셀이 Slack에서 차지하길 원하는 총 칸(문자) 폭. 예: 6</div>
-        </div>
-        <div class="row">
           <label>이모지 가정 폭(칸)</label>
-          <input type="number" id="glyphCols" min="0" max="20" value="5" />
-          <div class="hint">Slack에서 해당 이모지의 대략적 폭(예: 5 또는 6). 남는 칸은 공백으로 우측 패딩.</div>
+          <input type="number" id="glyphCols" min="1" max="20" value="5" />
+          <div class="hint">Slack에서 해당 이모지가 차지한다고 가정하는 문자 폭(예: 5 또는 6)</div>
         </div>
       </div>
 
@@ -84,7 +79,7 @@
         <div class="row">
           <label>세로 반복(줄)</label>
           <input type="number" id="cellRows" min="1" max="4" value="1" />
-          <div class="hint">한 셀(한 줄)을 수직으로 복제하여 종횡비를 조정</div>
+          <div class="hint">한 셀(한 줄)을 수직으로 복제하여 종횡비 조정</div>
         </div>
         <div class="row">
           <label class="switch"><input type="checkbox" id="bold" checked> 굵게(bold, 렌더링용)</label>
@@ -111,7 +106,7 @@
       </div>
 
       <canvas id="hiddenCanvas" width="1" height="1" style="display:none"></canvas>
-      <div class="footer">주의: Slack/OS/폰트에 따라 이모지 가로폭이 달라 보일 수 있습니다. <b>이모지 가정 폭</b>을 조절해 실제 결과에 맞춰보세요. 출력은 항상 "공백 + :emoji_name:"만 사용합니다.</div>
+      <div class="footer">주의: Slack/OS/폰트에 따라 이모지 가로폭이 달라 보일 수 있습니다. <b>이모지 가정 폭</b>으로 미세 조정하세요.</div>
     </div>
   </div>
 
@@ -133,24 +128,22 @@
     const copyBtn = $('#copyBtn');
     const downloadBtn = $('#downloadBtn');
 
-    const cellCols = $('#cellCols');
     const glyphCols = $('#glyphCols');
     const cellRows = $('#cellRows');
 
-    // 초기값: 모바일이면 20, PC면 64
     if (window.innerWidth < 640) cols.value = 20;
     colsVal.textContent = cols.value;
     thVal.textContent = th.value;
 
     function buildCell(isFilled){
-      const total = Math.max(1, parseInt(cellCols.value||'6', 10));
-      const assumed = Math.max(0, parseInt(glyphCols.value||'5', 10));
+      const assumed = Math.max(1, parseInt(glyphCols.value||'5', 10));
       if (isFilled){
         const token = fg.value || ':emoji:'; // 그대로 출력
-        const pad = Math.max(0, total - assumed);
-        return token + ' '.repeat(pad);
+        // 총 폭 = 이모지 가정 폭. 패딩 없음(정확히 assumed만큼 차지한다고 가정)
+        return token + ' '.repeat(Math.max(0, assumed - 1));
       } else {
-        return ' '.repeat(total);
+        // 빈 셀은 가정 폭만큼의 공백
+        return ' '.repeat(assumed);
       }
     }
 
@@ -163,7 +156,6 @@
 
       if (!txt.trim()) { out.textContent = ''; return; }
 
-      // 캔버스 렌더링 (윤곽 추출 전용)
       const baseFontSize = 240;
       ctx.font = `${weight} ${baseFontSize}px ${font}`;
       const metrics = ctx.measureText(txt);
@@ -188,9 +180,6 @@
       const cellW = canvas.width / COLS;
       const cellH = canvas.height / ROWS;
 
-      const filledCell = buildCell(true);
-      const emptyCell = buildCell(false);
-
       const lines = [];
       for (let r=0; r<ROWS; r++){
         let line = '';
@@ -203,12 +192,12 @@
           for (let y=y0; y<y1; y++){
             for (let x=x0; x<x1; x++){
               const idx = (y*canvas.width + x)*4;
-              const lum = (img[idx]+img[idx+1]+img[idx+2])/3; // 평균 명도
+              const lum = (img[idx]+img[idx+1]+img[idx+2])/3;
               sum += lum; cnt++;
             }
           }
           const avg = cnt ? sum/cnt : 255;
-          line += (avg < threshold) ? filledCell : emptyCell;
+          line += (avg < threshold) ? buildCell(true) : buildCell(false);
         }
         const vr = Math.max(1, Math.min(4, parseInt(cellRows.value||'1',10)));
         for (let k=0; k<vr; k++) lines.push(line);
@@ -224,7 +213,7 @@
       thVal.textContent = threshold;
     }
 
-    [text, cols, th, fg, bold, linespace, fontSel, cellCols, glyphCols, cellRows].forEach(el => el.addEventListener('input', render));
+    [text, cols, th, fg, bold, linespace, fontSel, glyphCols, cellRows].forEach(el => el.addEventListener('input', render));
 
     window.addEventListener('resize', () => {});
     presetPc.addEventListener('click', () => { cols.value = 64; render(); });
@@ -239,7 +228,6 @@
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
     });
 
-    // 초기 렌더
     render();
   </script>
 </body>
