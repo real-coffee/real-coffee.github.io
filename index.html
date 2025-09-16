@@ -2,233 +2,334 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>블록 아트 생성기 (Slack 이모지 shortcode 전용)</title>
+  <title>Score Diff Viewer (두 JSON 비교)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --brand:#4f46e5; }
-    *{box-sizing:border-box}
-    body{margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif; background:var(--bg); color:var(--ink)}
-    .wrap{max-width:1024px; margin:0 auto; padding:24px}
-    .card{background:var(--card); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.06); padding:16px}
-    h1{font-size:clamp(20px,3vw,28px); margin:0 0 8px}
-    p.small{color:var(--muted); margin:0 0 16px; font-size:13px}
-    .grid{display:grid; gap:12px; grid-template-columns:1fr}
-    @media (min-width:768px){ .grid-3{ grid-template-columns:repeat(3,1fr)} }
-    .row{display:grid; gap:6px}
-    label{font-size:13px; color:var(--muted)}
-    input[type="text"], input[type="number"], button, select{height:40px}
-    input[type="text"], input[type="number"], select{width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:0 12px; background:#fff; outline:none; transition: box-shadow .15s,border-color .15s}
-    input[type="text"]:focus, input[type="number"]:focus, select:focus{border-color:var(--brand); box-shadow:0 0 0 3px rgba(79,70,229,.15)}
-    input[type="range"]{width:100%}
-    .controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-    .btn{border:0; background:var(--brand); color:#fff; border-radius:10px; padding:0 12px; cursor:pointer}
-    .btn:hover{filter:brightness(.95)}
-    .btn-ghost{background:#eef2ff; color:#3730a3}
-    .mono{white-space:pre; overflow:auto; background:#0b1020; color:#e5e7eb; border-radius:12px; padding:12px; line-height:1em; font-family: ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace}
-    .hint{font-size:12px; color:var(--muted)}
-    .row-inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .switch{display:inline-flex; gap:6px; align-items:center; font-size:13px}
-    .footer{color:var(--muted); font-size:12px; margin-top:8px}
-    .muted{color:var(--muted); font-size:12px}
+    :root {
+      --bg: #f6f7fb; --card:#fff; --muted:#6b7280; --text:#0f172a;
+      --border:#e5e7eb; --accent:#4f46e5; --good:#059669; --bad:#dc2626;
+      --chip:#f3f4f6; --chip2:#eef2ff;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background:var(--bg); color:var(--text);}
+    .wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    p.lead { margin: 0 0 16px; color: var(--muted); }
+    .grid { display:grid; gap:16px; grid-template-columns: 1fr; }
+    @media (min-width: 1000px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    .card { background:var(--card); border:1px solid var(--border); border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+    .card h2 { margin:0 0 8px; font-size:16px; }
+    .pad { padding: 14px; }
+    textarea { width:100%; height: 220px; resize: vertical; font: 13px/1.5 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; border:1px solid var(--border); border-radius:12px; padding:10px; outline: none; }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #4f46e533; }
+    .controls { display:flex; gap:12px; flex-wrap: wrap; align-items: end; }
+    .control { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px; }
+    label { font-size: 12px; color:var(--muted); display:block; margin-bottom:6px; }
+    input[type="number"], select { width: 180px; height: 36px; border:1px solid var(--border); border-radius:10px; padding:0 10px; }
+    .cb { display:flex; align-items:center; gap:8px; font-size: 14px; }
+    .btns { margin-left:auto; display:flex; gap:8px; }
+    button { height:36px; padding:0 12px; border-radius:10px; border:1px solid var(--border); background:#f8fafc; cursor:pointer; }
+    button:hover { background:#eef2ff; }
+    .btn-primary { background: var(--accent); color:#fff; border-color: var(--accent); }
+    .btn-primary:hover { filter: brightness(0.96); }
+    table { width:100%; border-collapse: collapse; font-size: 14px; }
+    thead { background:#f3f4f6; }
+    th, td { padding:10px 12px; border-top:1px solid var(--border); vertical-align: top; }
+    th { text-align: left; color: #374151; position: sticky; top: 0; z-index: 1; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .delta.pos { color: var(--good); }
+    .delta.neg { color: var(--bad); }
+    .chip { display:inline-block; padding:3px 8px; border-radius:999px; background: var(--chip); font-size: 12px; }
+    .chip.good { background:#ecfdf5; color:#065f46; }
+    .chip.bad { background:#fef2f2; color:#991b1b; }
+    .chip.same { background:#f3f4f6; color:#374151; }
+    .chip.add { background:#eff6ff; color:#1e40af; }
+    .chip.rem { background:#fffbeb; color:#92400e; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .summary { display:grid; gap:10px; grid-template-columns: repeat(6, 1fr); margin-top: 14px; }
+    .summary .box { background: var(--card); border:1px solid var(--border); border-radius:12px; padding:10px; text-align: center; }
+    .summary .n { font-weight: 700; font-size: 18px; }
+    .scroll { max-height: 55vh; overflow:auto; }
+    .error { color:#b91c1c; font-size: 13px; margin-left: 8px; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="row-inline" style="justify-content:space-between;">
-        <h1>Slack 이모지 블록 아트 (공백 + :emoji: 전용)</h1>
-        <div class="controls">
-          <button class="btn btn-ghost" id="presetPc" title="PC 해상도 프리셋">PC(64)</button>
-          <button class="btn btn-ghost" id="presetMo" title="모바일 해상도 프리셋">Mobile(20)</button>
-        </div>
-      </div>
-      <p class="small">출력은 <b>오직 공백과 입력한 이모지 shortcode</b>(예: <code>:thumbsy2:</code>)만 사용합니다. 그대로 복사→Slack에 붙여넣으세요.</p>
+    <h1>Score Diff Viewer</h1>
+    <p class="lead">두 개의 JSON 배열(각 원소에 <code>name</code>, <code>score</code>, 선택적 <code>updated_at</code>)을 붙여넣으면, 이름별 점수 변화(Δ)를 계산해 보여줍니다.</p>
 
-      <div class="grid grid-3">
-        <div class="row">
-          <label>텍스트</label>
-          <input type="text" id="text" placeholder="예: 따 / Hello / 안녕" value="따" />
-          <div class="hint">둘 이상 글자는 해상도(가로 블록 수)를 올리면 윤곽이 또렷합니다.</div>
+    <div class="grid">
+      <div class="card pad">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2>왼쪽(이전)</h2>
+          <span id="errLeft" class="error" style="display:none"></span>
         </div>
-        <div class="row">
-          <label>가로 블록 수: <span id="colsVal">64</span></label>
-          <input type="range" id="cols" min="8" max="160" value="64" />
-          <div class="hint">모바일 8–24 권장. 화면이 좁을수록 낮추세요.</div>
-        </div>
-        <div class="row">
-          <label>감도(임계값): <span id="thVal">140</span></label>
-          <input type="range" id="th" min="40" max="220" value="140" />
-          <div class="hint">낮을수록 더 진하게 채워집니다.</div>
-        </div>
+        <textarea id="left" placeholder='[{"name":"A","score":1.23,"updated_at":"2025-01-01T00:00:00Z"}]'></textarea>
       </div>
-
-      <div class="grid" style="grid-template-columns:1fr 1fr;">
-        <div class="row">
-          <label>이모지 shortcode</label>
-          <input type="text" id="fg" value=":thumbsy2:" />
-          <div class="hint">예: <code>:thumbsy2:</code>, <code>:fire:</code>, <code>:rocket:</code> 등. 그대로 출력됩니다.</div>
+      <div class="card pad">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2>오른쪽(이후)</h2>
+          <span id="errRight" class="error" style="display:none"></span>
         </div>
-        <div class="row">
-          <label>이모지 가정 폭(칸)</label>
-          <input type="number" id="glyphCols" min="1" max="20" value="5" />
-          <div class="hint">Slack에서 해당 이모지가 차지한다고 가정하는 문자 폭(예: 5 또는 6)</div>
-        </div>
+        <textarea id="right" placeholder='[{"name":"A","score":2.34,"updated_at":"2025-02-01T00:00:00Z"}]'></textarea>
       </div>
-
-      <div class="grid" style="grid-template-columns:1fr 1fr;">
-        <div class="row">
-          <label>세로 반복(줄)</label>
-          <input type="number" id="cellRows" min="1" max="4" value="1" />
-          <div class="hint">한 셀(한 줄)을 수직으로 복제하여 종횡비 조정</div>
-        </div>
-        <div class="row">
-          <label class="switch"><input type="checkbox" id="bold" checked> 굵게(bold, 렌더링용)</label>
-          <label class="switch">줄 간격(빈 줄): <input type="number" id="linespace" min="0" max="3" value="0" style="width:64px"></label>
-          <label class="switch">폰트:
-            <select id="fontSel">
-              <option value="Apple SD Gothic Neo,Malgun Gothic,Noto Sans KR,Arial Unicode MS,sans-serif">한글 가독성</option>
-              <option value="Noto Sans KR,Apple SD Gothic Neo,Malgun Gothic,Arial Unicode MS,sans-serif">Noto Sans KR</option>
-              <option value="Segoe UI,Roboto,system-ui,sans-serif">영문 위주</option>
-              <option value="ui-monospace,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace">Monospace</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <div class="controls" style="margin:8px 0; gap:12px;">
-        <button class="btn" id="copyBtn">결과 복사</button>
-        <button class="btn" id="downloadBtn">.txt 저장</button>
-      </div>
-
-      <div class="row">
-        <label>결과 (공백+shortcode만 포함)</label>
-        <pre id="out" class="mono" style="min-height:160px;">(여기에 결과가 표시됩니다)</pre>
-      </div>
-
-      <canvas id="hiddenCanvas" width="1" height="1" style="display:none"></canvas>
-      <div class="footer">주의: Slack/OS/폰트에 따라 이모지 가로폭이 달라 보일 수 있습니다. <b>이모지 가정 폭</b>으로 미세 조정하세요.</div>
     </div>
+
+    <div class="controls" style="margin-top:12px">
+      <div class="control">
+        <label>변화 임계값 ε (|Δ| ≤ ε 이면 "same")</label>
+        <input type="number" id="epsilon" value="0" min="0" step="0.00001" />
+      </div>
+      <div class="control">
+        <label>정렬</label>
+        <select id="sortBy">
+          <option value="magnitude">변화량 |Δ|</option>
+          <option value="name">이름 A→Z</option>
+          <option value="new">새 점수 ↓</option>
+          <option value="old">이전 점수 ↓</option>
+          <option value="updated">업데이트 시간 ↓</option>
+        </select>
+      </div>
+      <div class="control" style="display:flex;gap:14px;align-items:center">
+        <label style="margin:0">표시 옵션</label>
+        <label class="cb"><input type="checkbox" id="onlyChanged" checked /> 변경만</label>
+        <label class="cb"><input type="checkbox" id="includeAdded" checked /> 추가 포함</label>
+        <label class="cb"><input type="checkbox" id="includeRemoved" checked /> 제거 포함</label>
+      </div>
+      <div class="btns">
+        <button id="swapBtn" title="왼쪽/오른쪽 내용 바꾸기">입력 스왑</button>
+        <button id="csvBtn" class="btn-primary">CSV 내보내기</button>
+      </div>
+    </div>
+
+    <div class="summary" id="summary">
+      <div class="box"><div class="muted">증가</div><div class="n" id="sumInc">0</div></div>
+      <div class="box"><div class="muted">감소</div><div class="n" id="sumDec">0</div></div>
+      <div class="box"><div class="muted">동일</div><div class="n" id="sumSame">0</div></div>
+      <div class="box"><div class="muted">추가</div><div class="n" id="sumAdd">0</div></div>
+      <div class="box"><div class="muted">제거</div><div class="n" id="sumRem">0</div></div>
+      <div class="box"><div class="muted">표시 수</div><div class="n" id="sumTotal">0</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="scroll">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th class="num">이전 점수</th>
+              <th class="num">새 점수</th>
+              <th class="num">Δ (new - old)</th>
+              <th>상태</th>
+              <th>업데이트 시간</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="6" class="muted" style="text-align:center;padding:24px">JSON을 붙여넣어 주세요.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:10px;text-align:center">Made with ❤️ — 붙여넣기 → 옵션 설정 → CSV 내보내기</p>
   </div>
 
   <script>
-    const $ = sel => document.querySelector(sel);
-    const text = $('#text');
-    const cols = $('#cols');
-    const colsVal = $('#colsVal');
-    const th = $('#th');
-    const thVal = $('#thVal');
-    const fg = $('#fg');
-    const bold = $('#bold');
-    const linespace = $('#linespace');
-    const out = $('#out');
-    const fontSel = $('#fontSel');
-    const canvas = $('#hiddenCanvas');
-    const presetPc = $('#presetPc');
-    const presetMo = $('#presetMo');
-    const copyBtn = $('#copyBtn');
-    const downloadBtn = $('#downloadBtn');
+    // --------- Util
+    const $ = (id) => document.getElementById(id);
 
-    const glyphCols = $('#glyphCols');
-    const cellRows = $('#cellRows');
-
-    if (window.innerWidth < 640) cols.value = 20;
-    colsVal.textContent = cols.value;
-    thVal.textContent = th.value;
-
-    function buildCell(isFilled){
-      const assumed = Math.max(1, parseInt(glyphCols.value||'5', 10));
-      if (isFilled){
-        const token = fg.value || ':emoji:'; // 그대로 출력
-        // 총 폭 = 이모지 가정 폭. 패딩 없음(정확히 assumed만큼 차지한다고 가정)
-        return token + ' '.repeat(Math.max(0, assumed - 1));
-      } else {
-        // 빈 셀은 가정 폭만큼의 공백
-        return ' '.repeat(assumed);
+    function safeParse(text) {
+      try {
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) return { error: "JSON 배열이 아닙니다." };
+        const rows = data.map((x, i) => {
+          if (!x || typeof x !== 'object') return { name: `__INVALID_${i}__`, score: null, updated_at: null };
+          const name = (x.name ?? `__INVALID_${i}__`) + "";
+          let score = null;
+          if (typeof x.score === "number") score = x.score;
+          else if (typeof x.score === "string" && !Number.isNaN(Number(x.score))) score = Number(x.score);
+          const updated_at = typeof x.updated_at === "string" ? x.updated_at : null;
+          return { name, score, updated_at };
+        });
+        return { rows };
+      } catch (e) {
+        return { error: e.message || "파싱 오류" };
       }
     }
 
-    function render(){
-      const ctx = canvas.getContext('2d', { willReadFrequently:true });
-      const txt = text.value || '';
-      const threshold = parseInt(th.value, 10) || 140;
-      const weight = bold.checked ? 800 : 400;
-      const font = fontSel.value;
+    function computeDiffs(L, R, opts) {
+      const lmap = new Map();
+      L.forEach(r => lmap.set(r.name, r));        // 마지막 값 우선
+      const rmap = new Map();
+      R.forEach(r => rmap.set(r.name, r));
 
-      if (!txt.trim()) { out.textContent = ''; return; }
-
-      const baseFontSize = 240;
-      ctx.font = `${weight} ${baseFontSize}px ${font}`;
-      const metrics = ctx.measureText(txt);
-      const textWidth = Math.ceil(metrics.width) + 40;
-      const ascent = Math.ceil(metrics.actualBoundingBoxAscent || baseFontSize*0.8);
-      const descent = Math.ceil(metrics.actualBoundingBoxDescent || baseFontSize*0.2);
-      const textHeight = ascent + descent + 40;
-
-      canvas.width = Math.max(1, textWidth);
-      canvas.height = Math.max(1, textHeight);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#000000';
-      ctx.textBaseline = 'alphabetic';
-      ctx.font = `${weight} ${baseFontSize}px ${font}`;
-      ctx.fillText(txt, 20, 20+ascent);
-
-      const COLS = Math.max(1, parseInt(cols.value,10) || 64);
-      const ROWS = Math.max(1, Math.round((canvas.height/canvas.width) * COLS));
-
-      const img = ctx.getImageData(0,0,canvas.width,canvas.height).data;
-      const cellW = canvas.width / COLS;
-      const cellH = canvas.height / ROWS;
-
-      const lines = [];
-      for (let r=0; r<ROWS; r++){
-        let line = '';
-        for (let c=0; c<COLS; c++){
-          const x0 = Math.floor(c*cellW);
-          const y0 = Math.floor(r*cellH);
-          const x1 = Math.min(canvas.width, Math.floor((c+1)*cellW));
-          const y1 = Math.min(canvas.height, Math.floor((r+1)*cellH));
-          let sum=0, cnt=0;
-          for (let y=y0; y<y1; y++){
-            for (let x=x0; x<x1; x++){
-              const idx = (y*canvas.width + x)*4;
-              const lum = (img[idx]+img[idx+1]+img[idx+2])/3;
-              sum += lum; cnt++;
-            }
+      const names = new Set([...lmap.keys(), ...rmap.keys()]);
+      const out = [];
+      names.forEach(name => {
+        const a = lmap.get(name), b = rmap.get(name);
+        if (a && b) {
+          const oldScore = a.score, newScore = b.score;
+          if (oldScore == null || newScore == null) {
+            out.push({ name, oldScore, newScore, delta: null, status: "invalid", oldUpdatedAt: a.updated_at, newUpdatedAt: b.updated_at });
+          } else {
+            const delta = newScore - oldScore;
+            const status = Math.abs(delta) <= opts.epsilon ? "same" : (delta > 0 ? "increased" : "decreased");
+            out.push({ name, oldScore, newScore, delta, status, oldUpdatedAt: a.updated_at, newUpdatedAt: b.updated_at });
           }
-          const avg = cnt ? sum/cnt : 255;
-          line += (avg < threshold) ? buildCell(true) : buildCell(false);
+        } else if (!a && b) {
+          out.push({ name, oldScore: null, newScore: b.score ?? null, delta: null, status: "added", oldUpdatedAt: null, newUpdatedAt: b.updated_at });
+        } else if (a && !b) {
+          out.push({ name, oldScore: a.score ?? null, newScore: null, delta: null, status: "removed", oldUpdatedAt: a.updated_at, newUpdatedAt: null });
         }
-        const vr = Math.max(1, Math.min(4, parseInt(cellRows.value||'1',10)));
-        for (let k=0; k<vr; k++) lines.push(line);
-        const extra = Math.max(0, Math.min(3, parseInt(linespace.value||'0',10)));
-        for (let k=0; k<extra; k++) lines.push('');
-      }
-      while (lines.length && lines[0].trim().length===0) lines.shift();
-      while (lines.length && lines[lines.length-1].trim().length===0) lines.pop();
+      });
 
-      out.textContent = lines.join('
-');
-      colsVal.textContent = COLS;
-      thVal.textContent = threshold;
+      // filter
+      const filtered = out.filter(d => {
+        if (d.status === "added") return opts.includeAdded;
+        if (d.status === "removed") return opts.includeRemoved;
+        if (opts.onlyChanged) return d.status === "increased" || d.status === "decreased";
+        return true;
+      });
+
+      // sort
+      filtered.sort((a, b) => {
+        const s = opts.sortBy;
+        if (s === "name") return a.name.localeCompare(b.name);
+        if (s === "new") return (b.newScore ?? -Infinity) - (a.newScore ?? -Infinity);
+        if (s === "old") return (b.oldScore ?? -Infinity) - (a.oldScore ?? -Infinity);
+        if (s === "updated") {
+          const ad = Date.parse(a.newUpdatedAt ?? a.oldUpdatedAt ?? "1970-01-01");
+          const bd = Date.parse(b.newUpdatedAt ?? b.oldUpdatedAt ?? "1970-01-01");
+          return bd - ad;
+        }
+        // magnitude
+        const am = Math.abs(a.delta ?? Number.NEGATIVE_INFINITY);
+        const bm = Math.abs(b.delta ?? Number.NEGATIVE_INFINITY);
+        return bm - am;
+      });
+
+      return filtered;
     }
 
-    [text, cols, th, fg, bold, linespace, fontSel, glyphCols, cellRows].forEach(el => el.addEventListener('input', render));
+    function fmt(num, digits=5) {
+      return (num === null || Number.isNaN(num)) ? "—" : Number(num).toFixed(digits);
+    }
 
-    window.addEventListener('resize', () => {});
-    presetPc.addEventListener('click', () => { cols.value = 64; render(); });
-    presetMo.addEventListener('click', () => { cols.value = 20; render(); });
+    // --------- DOM render
+    function render(diffs) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+      if (!diffs.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="muted" style="text-align:center;padding:24px">표시할 항목이 없습니다.</td>`;
+        tbody.appendChild(tr);
+      } else {
+        for (const d of diffs) {
+          const tr = document.createElement("tr");
+          const arrow = d.delta == null ? "" : (d.delta > 0 ? "▲ " : d.delta < 0 ? "▼ " : "");
+          const deltaClass = d.delta == null ? "" : d.delta > 0 ? "pos" : d.delta < 0 ? "neg" : "";
+          const statusChip =
+            d.status === "increased" ? 'chip good' :
+            d.status === "decreased" ? 'chip bad' :
+            d.status === "same" ? 'chip same' :
+            d.status === "added" ? 'chip add' :
+            d.status === "removed" ? 'chip rem' : 'chip';
 
-    copyBtn.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(out.textContent || ''); } catch(e) { alert('클립보드 복사 실패: '+e); }
+          const updates = [
+            d.oldUpdatedAt ? `<div><span class="muted">old:</span> ${d.oldUpdatedAt}</div>` : "",
+            d.newUpdatedAt ? `<div><span class="muted">new:</span> ${d.newUpdatedAt}</div>` : "",
+          ].join("");
+
+          tr.innerHTML = `
+            <td style="white-space:nowrap"><strong>${d.name}</strong></td>
+            <td class="num">${fmt(d.oldScore)}</td>
+            <td class="num">${fmt(d.newScore)}</td>
+            <td class="num delta ${deltaClass}">${d.delta==null ? "—" : (arrow + fmt(d.delta))}</td>
+            <td><span class="${statusChip}">${d.status}</span></td>
+            <td class="muted" style="white-space:nowrap">${updates || "—"}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      }
+
+      // summary
+      const s = { increased:0, decreased:0, same:0, added:0, removed:0, invalid:0 };
+      for (const d of diffs) s[d.status] = (s[d.status] || 0) + 1;
+      $("sumInc").textContent = s.increased || 0;
+      $("sumDec").textContent = s.decreased || 0;
+      $("sumSame").textContent = s.same || 0;
+      $("sumAdd").textContent = s.added || 0;
+      $("sumRem").textContent = s.removed || 0;
+      $("sumTotal").textContent = diffs.length;
+    }
+
+    function update() {
+      const l = $("left").value.trim();
+      const r = $("right").value.trim();
+
+      const L = l ? safeParse(l) : { rows: [] };
+      const R = r ? safeParse(r) : { rows: [] };
+
+      const errLeft = $("errLeft"), errRight = $("errRight");
+      errLeft.style.display = L.error ? "" : "none";
+      errLeft.textContent = L.error || "";
+      errRight.style.display = R.error ? "" : "none";
+      errRight.textContent = R.error || "";
+
+      if (L.error || R.error) {
+        render([]); return;
+      }
+
+      const opts = {
+        epsilon: Number($("epsilon").value || 0),
+        onlyChanged: $("onlyChanged").checked,
+        includeAdded: $("includeAdded").checked,
+        includeRemoved: $("includeRemoved").checked,
+        sortBy: $("sortBy").value,
+      };
+
+      const diffs = computeDiffs(L.rows, R.rows, opts);
+      render(diffs);
+      window.__DIFFS__ = diffs; // for CSV export
+    }
+
+    function downloadCSV() {
+      const diffs = window.__DIFFS__ || [];
+      const header = ["name","oldScore","newScore","delta","status","oldUpdatedAt","newUpdatedAt"];
+      const lines = [header.join(",")];
+      for (const d of diffs) {
+        const row = [
+          (d.name||"").replaceAll('"','""'),
+          d.oldScore ?? "",
+          d.newScore ?? "",
+          d.delta ?? "",
+          d.status ?? "",
+          d.oldUpdatedAt ?? "",
+          d.newUpdatedAt ?? "",
+        ].map(x => typeof x === "string" ? `"${x}"` : String(x));
+        lines.push(row.join(","));
+      }
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `score_diff_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --------- Events
+    ["left","right","epsilon","sortBy","onlyChanged","includeAdded","includeRemoved"].forEach(id => {
+      const el = $(id);
+      el.addEventListener(el.tagName === "TEXTAREA" ? "input" : "change", update);
     });
-    downloadBtn.addEventListener('click', () => {
-      const blob = new Blob([out.textContent||''], {type:'text/plain;charset=utf-8'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'block-art.txt';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+    $("swapBtn").addEventListener("click", () => {
+      const t = $("left").value; $("left").value = $("right").value; $("right").value = t; update();
     });
+    $("csvBtn").addEventListener("click", downloadCSV);
 
-    render();
+    // First render
+    update();
   </script>
 </body>
 </html>
